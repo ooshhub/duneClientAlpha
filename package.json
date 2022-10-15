@@ -5,6 +5,7 @@
   "description": "Dune Alpha",
   "main": "./clientBuild/main/index.js",
   "author": "Oosh",
+  "typings": "./src/types/main.d.ts",
   "scripts": {
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",

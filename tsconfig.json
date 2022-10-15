@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    // "allowJs": true,
+    "typeRoots": [
+      "./src/types"
+    ]
+  },
   "files": [],
   "references": [
     {
