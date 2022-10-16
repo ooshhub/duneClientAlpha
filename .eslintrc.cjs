@@ -15,12 +15,13 @@ module.exports = {
   },
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'plugin:vue/vue3-recommended',
     'eslint:recommended',
     '@vue/eslint-config-typescript',
+    'plugin:vue/vue3-recommended',
   ],
   // parser: '@typescript-eslint/parser',
   rules: {
+    '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
     // '@typescript-eslint/explicit-function-return-type': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',

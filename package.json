@@ -5,7 +5,8 @@
   "description": "Dune Alpha",
   "main": "./clientBuild/main/main.js",
   "author": "Oosh",
-  "typings": "./src/types/main.d.ts",
+  "typings": "main.d.ts",
+  "types": "main.d.ts",
   "scripts": {
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
@@ -46,7 +47,6 @@
     "tailwindcss": "^3.1.8",
     "typescript": "^4.7.4",
     "vite": "^3.1.6",
-    "vue": "^3.2.40",
-    "vue-tsc": "^0.40.13"
+    "vue": "^3.2.40"
   }
 }

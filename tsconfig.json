@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "typeRoots": [
-      "./src/types"
-    ]
+      "./src/@types",
+    ],
   },
+  "exclude": ["clientBuild/**/*", "build/**/*"],
   "files": [],
   "references": [
     {

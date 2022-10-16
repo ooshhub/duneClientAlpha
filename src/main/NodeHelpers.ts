@@ -2,7 +2,7 @@
 import fs from 'fs/promises';
 // import { Helpers as browserHelpers } from './Helpers.mjs';
 
-export class Helpers {
+export class NodeHelpers {
 
 /* 
 // 1. FILE SYSTEM

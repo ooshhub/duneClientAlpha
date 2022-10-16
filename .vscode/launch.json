@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "name": "Debug Main Process",
       "type": "node",
@@ -11,6 +12,15 @@
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron-vite.cmd"
       },
       "runtimeArgs": ["--sourcemap"]
+    },
+    {
+      "name": "Debug File",
+      "program": "${workspaceFolder}/${file}",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
     }
   ]
 }

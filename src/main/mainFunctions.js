@@ -1,6 +1,6 @@
-import { mainHub, debug, CONFIG, electronRoot, Win } from './main';
+import { mainHub, debug, CONFIG, electronRoot, Win } from '../main';
 import { Helpers } from '../shared/Helpers';
-import { Helpers as nHelpers } from './nodeHelpers';
+import { NodeHelpers } from './NodeHelpers';
 // import { getMenuItems } from '../client/mainMenu/menuItems.mjs';
 // import { startLocalServer } from '../server/net/localServer.mjs';
 
@@ -10,7 +10,7 @@ export const main = (() => {
   /*
   // NET
   */
-  // const startServer = async ({ serverOptions }) => {
+  // const startServer = async ({ serverOptions }) => { //eslint-disable-line no-unused-vars
   //   const startLocalServer = (await import('../server/net/localServer.mjs')).startLocalServer;
   //   // debug.log(startLocalServer);
   //   // Kill old server if still there
@@ -69,14 +69,14 @@ export const main = (() => {
       else if (r === 'ingamemenu') hbsPath = `${CONFIG.PATH.HBS}/inGameMenu.hbs`, hbsData = { player: CONFIG.userSettings }
       else if (r === 'chat') hbsPath = `${CONFIG.PATH.HBS}/chat.hbs`;
       else if (r === 'lobby') hbsPath = `${CONFIG.PATH.HBS}/lobby.hbs`, hbsData = data;
-      const resHtml = await nHelpers.compileHbs(hbsPath, hbsData);
+      const resHtml = await NodeHelpers.compileHbs(hbsPath, hbsData);
       if (resHtml) mainHub.trigger('renderer/responseHtml', {req: r, html: resHtml});
       else debug.log([`Error loading HTML`, resHtml], 'error');
     }));
   }
   const renderMentatHtml = async ({ container, template, data }) => {
     if (!template || !container || !data) return debug.log(`Missing data for Mentat render`, 'warn');
-    const responseHtml = await nHelpers.compileHbs(`${CONFIG.PATH.HBS}/${template}`, {house: data});
+    const responseHtml = await NodeHelpers.compileHbs(`${CONFIG.PATH.HBS}/${template}`, {house: data});
     // responseHtml = addTooltips(responseHtml);
     if (responseHtml) mainHub.trigger(`renderer/responseMentat`, { target: container, html: responseHtml });
     else debug.log([`Error loading HTML`, responseHtml], 'error');
@@ -101,7 +101,7 @@ export const main = (() => {
     if (!options.noSave) saveConfig();
   }
   const getConfig = async () => mainHub.trigger('renderer/responseConfig', { CONFIG });
-  const saveConfig = async () => nHelpers.saveFile(`${CONFIG.PATH.USERDATA}/userSettings.json`, JSON.stringify(CONFIG.userSettings));
+  const saveConfig = async () => NodeHelpers.saveFile(`${CONFIG.PATH.USERDATA}/userSettings.json`, JSON.stringify(CONFIG.userSettings));
 
   const exitAndSave = async () => { // erm.... saveAndExit would be a more sensible name
     console.log(`Saving settings...`);

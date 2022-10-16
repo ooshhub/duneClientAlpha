@@ -1,18 +1,23 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/renderer/resources/env.d.ts",
+    "src/@types/env.d.ts",
     "src/preload/*.d.ts",
-    "src/renderer/resources/main.ts"
+    "src/renderer/app/vue.ts",
+    "src/shared/*",
+    "src/renderer/app/**/*.ts",
+    "src/@types"
   ],
   "exclude": ["**/*.vue"],
   "compilerOptions": {
     "composite": true,
+    "allowJs": true,
     "baseUrl": ".",
+    "outDir": "clientBuild",
     "paths": {
       "@renderer/*": [
         "src/renderer/*"
       ]
-    }
+    },
   }
 }

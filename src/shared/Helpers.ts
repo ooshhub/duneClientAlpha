@@ -205,7 +205,7 @@ export class Helpers {
   static removeCyclicReferences(inputObj: object, stringify: boolean): string|object {
     const getCircularReplacer = (): any => {
       const seen = new WeakSet();
-      return (key, value) => {
+      return (_key, value) => {
         if (typeof value === "object" && value !== null) {
           if (seen.has(value)) {
             return;
@@ -216,7 +216,7 @@ export class Helpers {
       };
     };
     let output;
-    try { output = JSON.stringify(inputObj, getCircularReplacer()) } catch(e) { console.error(e); return e }
+    try { output = JSON.stringify(inputObj, getCircularReplacer()) } catch(e) { console.error(e) }
     return stringify ? output : JSON.parse(output);
   }
   // Flatten an object to a single level. Key names become the/original/nested/path.

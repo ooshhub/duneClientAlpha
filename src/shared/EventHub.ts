@@ -1,37 +1,50 @@
-// EventHub class
-// TODO: rewrite
+// Legacy:
 
-export class EventHub {
+import { LocalHubServiceInterface } from "../renderer/app/serviceProviders/LocalHubProviderInterface";
+
+/**
+ * @implements {LocalHubServiceInterface}
+ */
+export class EventHub implements LocalHubServiceInterface {
 
   #registeredEvents = {};
   #registeredOneTimeEvents = {};
   #registeredDestinations = {};
 
-	#hubState;
+	// #hubState = 'INIT';
 
-	#setHubState(newState) {
-		const states = {
-			INIT: 'INIT',
-		}
-		this.#hubState = states[newState] ?? null;
-	}
-	getHubState() { return this.#hubState }
-	hubInitDone() { this.#hubState = 'INIT' }
+	// #setHubState(newState) {
+	// 	const states = {
+	// 		INIT: 'INIT',
+	// 	}
+	// 	this.#hubState = states[newState] ?? null;
+	// }
+	// getHubState() { return this.#hubState }
+	// hubInitDone() { this.#hubState = 'INIT' }
 
-  constructor(name) {
+  constructor(name = 'NewHub') {
     this.name = name;
-		this.hubInitDone = this.hubInitDone.bind(this);
-		this.getHubState = this.getHubState.bind(this);
+		// this.hubInitDone = this.hubInitDone.bind(this);
+		// this.getHubState = this.getHubState.bind(this);
   }
 
-  async once(event, callback, priority) {
+  name: string;
+
+  /**
+   * @inheritDoc LocalHubServiceInterface
+   * @param event 
+   * @param callback 
+   * @param priority 
+   * @returns 
+   */
+  async once(event, callback, priority?) {
     if (typeof(callback) !== 'function') return console.warn(`${this.name}: callback must be a function!`);
     if (!this.#registeredOneTimeEvents[event]) this.#registeredOneTimeEvents[event] = [];
     const targetIndex = priority ? Math.min(priority, this.#registeredOneTimeEvents[event].length - 1) : this.#registeredOneTimeEvents[event].length;
     this.#registeredOneTimeEvents[event][targetIndex] = callback;
   }
 
-  async on(event, callback, priority) {
+  async on(event, callback, priority?) {
     if (typeof(callback) !== 'function') return console.warn(`${this.name}: callback must be a function!`);
     if (!this.#registeredEvents[event]) this.#registeredEvents[event] = [];
     const targetIndex = priority ? Math.min(priority, this.#registeredEvents[event].length - 1) : this.#registeredEvents[event].length;
@@ -45,7 +58,7 @@ export class EventHub {
     }
   }
 
-  async for(destination, callback, priority) {
+  async for(destination, callback, priority?) {
     if (typeof(callback) !== 'function') return console.warn(`${this.name}: destination callback must be a function!`);
     if (!this.#registeredDestinations[destination]) this.#registeredDestinations[destination] = [];
     const targetIndex = priority ? Math.min(priority, this.#registeredDestinations[destination].length - 1) : this.#registeredDestinations[destination].length;
@@ -55,6 +68,7 @@ export class EventHub {
   // Supply a '/' in event name to signify a destination and send to a 'for' registered handler
   // 'main/requestHtml' will send the event to the 'for' handler 'main', with {event: requestHtml, data: {...args}} as parameters
   async trigger(event, ...args) {
+    console.log(event);
     // Check 'for' handlers first, to send event to correct event hub
     if (/\//.test(event)) {
       const parts = event.match(/^(\w+)\/(\w+)/);

@@ -4,11 +4,17 @@
     "electron.vite.config.*",
     "src/main/*",
     "src/preload/*",
+    "src/main.ts",
+    "src/@types/*",
     "src/shared/*",
-    "src/types/*"
   ],
-  "exclude": ["src"],
+  "exclude": [
+    "clientBuild/**/*",
+    "build/**/*",
+  ],
   "compilerOptions": {
     "composite": true,
+    "allowJs": true,
+    "outDir": "./clientBuild"
   }
 }

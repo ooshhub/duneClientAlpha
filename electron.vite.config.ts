@@ -8,6 +8,9 @@ export default defineConfig({
       outDir: './clientBuild/main',
       rollupOptions: {
         external: ['@electron-toolkit/utils']
+      },
+      lib: {
+        entry: './src/main.ts'
       }
     }
   },
@@ -16,6 +19,9 @@ export default defineConfig({
       outDir: './clientBuild/preload',
       rollupOptions: {
         external: ['@electron-toolkit/preload']
+      },
+      lib: {
+        entry: './src/preload/index.ts'
       }
     }
   },

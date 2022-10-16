@@ -1,10 +1,11 @@
 import { Helpers } from '../shared/Helpers';
-import { Helpers as NodeHelpers } from './NodeHelpers';
+import { NodeHelpers } from './NodeHelpers';
 import { mainHub, debug, electronRoot } from '../main';
+import * as http from 'http';
 
 export const initConfig = async (configReference): Promise<boolean> => {
 	const electronApp = electronRoot.app;
-	const rootPath = electronApp?.getAppPath();
+	const rootPath = import.meta.url.replace(/\/main\/[^/]+$/, '').replace(/^[^:]+:\/\/\//, '');
 	const externalPath = electronApp.isPackaged ? electronApp.getPath('exe').replace(/\\[^\\]+$/, '') : rootPath;
 	if (!rootPath) throw new Error(`initConfig error: no root path to Electron found.`);
 	const config = {
@@ -30,7 +31,7 @@ export const initConfig = async (configReference): Promise<boolean> => {
 			{ name: `playerSettings`, load: getUserSettings(configReference) },
 			{ name: `netSettings`, load: getPublicIp(configReference) },
 			{ name: `electronReady`, load: electronApp.whenReady() },
-			{ name: 'mainHubInit', load: import('./mainHub') }
+			{ name: 'mainHubInit', load: import('./mainHub.js') }
 		]);
 		if (loadResult.failures === 0) {
 			debug.log(loadResult.msgs.join('\n'));
@@ -73,10 +74,16 @@ const getUserSettings = async (configReference): Promise<Error | void> => {
 // Get public facing IP
 const getPublicIp = async (configReference): Promise<void> => {
 	return new Promise((res) => {
-		fetch('api.ipify.org/').then((resp: Response) => {
-      console.log(resp);
-      configReference.NET.PUBLIC_IP = resp?.body?.toString() ?? '';
-		}).catch(e => console.log(e))
-    .finally(() => res());
+		http.get('http://api.ipify.org/', {}, (response) => {
+      const { statusCode } = response;
+      if (statusCode && statusCode > 199 && statusCode < 300) {
+        response.on('data', ip => {
+          configReference.NET.PUBLIC_IP = ip.toString();
+          res();
+        });
+      }
+      else configReference.NET.PUBLIC_IP = '';
+			})
+      .on('error', e => { console.error(e.message) });
   });
 };
