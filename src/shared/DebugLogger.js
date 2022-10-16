@@ -5,15 +5,38 @@
 // 		debugFlagLink: reference to a config flag to switch logging on and off.
 // 		logToConsole: whether to also log directly to console.log()
 export class DebugLogger {
-	constructor(sourceName, eventHubLink, debugFlagLink = 1, logToConsole = 0, receiverHub = 'renderer') {
-		return async (msgs, style='log', includeStack) => {
-			const stackString = (style === 'error' || includeStack) ? new Error().stack : '';
-			if (!console[style] || debugFlagLink === 0) return;
-			msgs = Array.isArray(msgs) ? msgs : [msgs];
-			eventHubLink.trigger(`${receiverHub}/${sourceName}Log`, {msgs: msgs, style: style, stack: stackString });
-			if (logToConsole) console[style](...msgs);
-		};
+
+  #loggerName;
+  #hub;
+  #debugFlag;
+  #logToConsole;
+  #receiver;
+
+	constructor(sourceName, eventHubLink, debugFlagLink = true, logToConsole = false, receiverHub = 'renderer') {
+    this.#loggerName = sourceName;
+    this.#hub = typeof eventHubLink?.trigger === 'function' ? eventHubLink : { trigger: () => console.error(`${sourceName}: broken hub link on debug logger.`) };
+    this.#debugFlag = debugFlagLink;
+    this.#logToConsole = logToConsole;
+    this.#receiver = receiverHub;
+		// return async (msgs, style='log', includeStack) => {
+		// 	const stackString = (style === 'error' || includeStack) ? new Error().stack : '';
+		// 	if (!console[style] || debugFlagLink === 0) return;
+		// 	msgs = Array.isArray(msgs) ? msgs : [msgs];
+		// 	eventHubLink.trigger(`${receiverHub}/${sourceName}Log`, {msgs: msgs, style: style, stack: stackString });
+		// 	if (logToConsole) console[style](...msgs);
+		// };
 	}
+
+  #sendLog(style, stack, ...msgs) {
+    if (this.#debugFlag) this.#hub.trigger(`${this.#receiver}/${this.#loggerName}Log`, { msgs, style, stack }); 
+    if (this.#logToConsole && console[style]) console[style](...msgs);
+  }
+
+  log(...args) { this.#sendLog('log', null, ...args) }
+  info(...args) { this.#sendLog('info', null, ...args) }
+  warn(...args) { this.#sendLog('warn', null, ...args) }
+  error(...args) { this.#sendLog('error', new Error().stack, ...args) }
+
 }
 
 // Receiver for remote loggers. Lives on the rendererHub for dunePrototype.
@@ -55,7 +78,7 @@ export class DebugReceiver {
 		// this.#registerHandlers();
 	}
 	registerHandlers() {
-		for (let src in this.#logSources) {
+		for (const src in this.#logSources) {
 			if (this.#logSources[src]) {
 				if (this.#hubReference.on) {
 					this.#hubReference.on(`${src}Log`, (msgData) => this.#processLog(src, msgData));

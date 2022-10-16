@@ -1,22 +1,29 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import * as electron from 'electron';
+import { electronAPI } from '@electron-toolkit/preload';
 
-// Custom APIs for renderer
-const api = {}
+const { contextBridge, ipcRenderer } = electron;
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+const channels = {
+  send: ['sendToMain', 'receiveFromRenderer'],
+  receive: ['sendToRenderer']
+};
+// Context bridge for messaging: Main process <==> Renderer 
 if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
-  }
-} else {
+  contextBridge.exposeInMainWorld('rendererToHub', {
+    send: async (channel, event, ...args) => {
+      if (channels.send.includes(channel)) ipcRenderer.send('receiveFromRenderer', event, ...args);
+      else console.warn(`Message from renderer was rejected: "${channel}" is not a valid token`);
+    },
+    receive: async (channel, evHandler) => {
+      if (channels.receive.includes(channel)) ipcRenderer.on(channel, (ipcEvent, event, ...args) => {
+        evHandler(event, ...args);
+      });
+      else console.warn(`Message from main process was rejected: "${channel}" is not a valid token`);
+    }
+  });
+  contextBridge.exposeInMainWorld('electron', electronAPI);
+}
+else {
   // @ts-ignore (define in dts)
   window.electron = electronAPI
-  // @ts-ignore (define in dts)
-  window.api = api
 }

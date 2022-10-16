@@ -1,6 +1,6 @@
 import { Helpers } from '../shared/Helpers';
 import { Helpers as NodeHelpers } from './NodeHelpers';
-import { mainHub, mlog, electronRoot } from './main';
+import { mainHub, debug, electronRoot } from '../main';
 
 export const initConfig = async (configReference): Promise<boolean> => {
 	const electronApp = electronRoot.app;
@@ -33,7 +33,7 @@ export const initConfig = async (configReference): Promise<boolean> => {
 			{ name: 'mainHubInit', load: import('./mainHub') }
 		]);
 		if (loadResult.failures === 0) {
-			mlog(loadResult.msgs.join('\n'));
+			debug.log(loadResult.msgs.join('\n'));
 			return true;
 		} else {
 			throw new Error(loadResult.errs.join('\n'));
@@ -56,7 +56,7 @@ const getUserSettings = async (configReference): Promise<Error | void> => {
 		else {
 			if (!/^[A-Za-z]_/.test(`${settings.player.pid}`)) {
 				settings.player.pid = Helpers.generatePlayerId(process?.env?.USERNAME ?? '');
-				mlog(`New player ID generated: ${settings.player.id}`);
+				debug.log(`New player ID generated: ${settings.player.id}`);
 				mainHub.trigger('saveConfig', settings);
 			}
 			if ('playerName' !in settings.player) {

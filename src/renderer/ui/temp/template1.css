@@ -1,0 +1,203 @@
+@font-face {
+  font-family: dune;
+  src: url("fonts/NEON CLUB MUSIC.otf") format("opentype");
+}
+@font-face {
+  font-family: dune;
+  font-weight: bold;
+  src: url("fonts/NEON CLUB MUSIC_bold.otf") format("opentype");
+}
+@font-face {
+  font-family: dune;
+  font-weight: lighter;
+  src: url("fonts/NEON CLUB MUSIC_light.otf") format("opentype");
+}
+@font-face {
+  font-family: dune;
+  font-style: italic;
+  src: url("fonts/NEON CLUB MUSIC_italic.otf") format("opentype");
+}
+:root {
+	--duneBrown: #201900;
+    --duneCyan: #0ed5d5;
+    --duneCyanBright: #03fbfb;
+    --duneCyanBrighter: #7bffff;
+    --duneCyanDark: #1c4f4f;
+    --duneGreen: #00d01c;
+    --duneGreenBright: #328600;
+    --duneGreenBrighter: #00d21d;
+}
+
+main {
+	transition: filter 0.5s;
+}
+
+input[name="disable-main"].disable ~ main {
+	pointer-events:none;
+}
+input[name="disable-main"].blur ~ main {
+	filter: blur(3px) grayscale(50%);
+	transition: filter 0.5s
+}
+main img {
+	max-width: 1500px;
+	display: block;
+	margin: auto;
+}
+
+.fc-dune.hide {
+	opacity: 0;
+}
+
+
+.dunebody {
+	background-color: #c6af96;
+	height: 1000px;
+	position: relative;
+}
+
+.fc-dune.error {
+	border: 2px solid red
+}
+
+.fc-dune.alert {
+  border: 2px solid var(--duneGreen);
+}
+
+
+.fc-dune {
+  position: absolute;
+  user-select: none;
+	display: block;
+
+	  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	min-width: 15rem;
+	max-width: 30rem;
+  padding: 0px 3px 0px 3px;
+  border-radius: 4px;
+  border: 2px solid var(--duneCyan);
+  background-color: #ad9c37;
+  box-shadow: 0px 0px 12px var(--duneCyanDark);
+  text-align: center;
+}
+
+.fc-dune header, footer {
+  position: relative;
+  height: 2rem;
+  font-size: 1.125rem;
+	vertical-align: middle;
+	line-height: 2rem;
+}
+
+.fc-dune header {
+	cursor: move;
+	color: #2f2300;
+}
+
+.fc-dune header .controls {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 50%;
+  right: 1%;
+  transform: translate(0%, -50%);
+}
+
+.fc-dune .body {
+  overflow-y: auto;
+  background-color: whitesmoke;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  max-height: 16rem;
+	border: 1px solid black;
+	padding: 0.5rem;
+	min-height: 1rem;
+}
+
+
+.fc-dune .modal-icon img {
+	margin: 0.5rem 0rem 0.5rem 0rem;
+	max-height: 3rem;
+}
+
+.fc-dune button {
+  cursor: pointer;
+	height: 1.5rem;
+	line-height: 1rem;
+	margin: auto;
+  text-shadow: 0px 0px 12px var(--duneCyanBrighter2);
+  transition: color 0.5s, text-shadow 1s;
+	background: none;
+	border: 1px solid;
+	border-radius: 3px;
+		font-variant: petite-caps;
+}
+
+
+.dunebody button.system {
+	color: #393939;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  display: flex;
+  height: 1.3rem;
+  width: 1.3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.125rem;
+  font-size: 0.875rem;
+  background-color: rgb(237 230 216 / 100);
+  box-shadow: 0px 0px 4px var(--duneBrown) inset;
+}
+.dunebody button.system.disabled {
+	opacity: 0;
+	pointer-events: none;
+}
+
+button.fc-modal {
+  transition: color 0.5s, border 0.5s, text-shadow 1s, box-shadow 1s;
+	color: var(--duneCyanDark);
+  	text-shadow: 0px 0px 1px darkgreen;
+	margin: 0px 0.5rem 0px 0.5rem;
+	
+}
+
+button.fc-modal.green {
+	color: green;
+  	text-shadow: 0px 0px 1px darkgreen;
+}
+
+button.fc-modal.red {
+	color: darkred;
+	text-shadow: 0px 0px 1px darkred;
+}
+
+button.fc-modal:hover {
+  transition: color 0.25s, text-shadow 0.5s, box-shadow 0.05s 0.05s;
+	color: var(--duneCyan);
+  text-shadow: 0px 0px 1px #109810;
+}
+
+button.fc-modal.green:hover {
+	color: #1dc31d;
+  text-shadow: 0px 0px 1px #109810;
+}
+
+button.fc-modal.red:hover {
+	color: #c51515;
+  text-shadow: 0px 0px 1px red;
+}
+
+.fc-dune button.fc-modal {
+  background-color: rgb(237 230 216 / 100);
+	  box-shadow: 0px 0px 4px var(--duneBrown) inset;
+	border: 1px solid black;
+	padding: 0px 0.5rem 0px 0.5rem;
+	transition: box-shadow 0.5s 0.5s;
+}
+
+.fc-dune button.fc-modal:active {
+  box-shadow: 0px 0px 8px var(--duneBrown) inset;
+	border: 1px solid black;
+	transition: box-shadow 0.0s;
+}

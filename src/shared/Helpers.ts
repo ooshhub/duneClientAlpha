@@ -1,6 +1,29 @@
 // shared helpers for Browser environment, NO NODE IMPORTS
 import * as convert from './Colours';
 
+type ParallelLoaderRequest = {
+  timeout?: number,
+  load: Promise<void|any>,
+  name: string,
+}
+
+type ParallelLoaderResult = {
+  err: number,
+  msg: string,
+  stack: string | null,
+}
+type ParallelLoaderResults = {
+  failures: number,
+  msgs: string[],
+  errs: string[],
+}
+
+type svgConversionData = {
+  svgAttributes: string,
+  styles: object[],
+  paths: object[],
+}
+
 export class Helpers {
 
   constructor() { throw new Error(`${this.constructor.name}: this class cannot be instantiated.`) }

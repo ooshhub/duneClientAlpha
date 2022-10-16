@@ -1,6 +1,6 @@
 // main process event hub
-import { mainHub, electronRoot, mlog } from '../main.mjs';
-import { main } from './mainFunctions.mjs';
+import { mainHub, electronRoot, debug } from './main';
+import { main } from './mainFunctions.js';
 
 // First round of handlers
 mainHub.on('requestHtml', main.renderHtml);
@@ -23,5 +23,5 @@ mainHub.once('mainWindowReady', ({ win }) => {
 	mainHub.on('readClipboard', main.ioClipboard);
 	mainHub.on('requestMentatHtml', main.renderMentatHtml);
 
-	mlog(`===mainHub handlers registered===`);
+	debug.log(`===mainHub handlers registered===`);
 });

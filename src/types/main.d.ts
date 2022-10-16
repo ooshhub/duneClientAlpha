@@ -8,7 +8,7 @@ declare global {
     [key: string]: any
   }
 
-  type anyClass<T = any> = new (...args: any[]) => T;
+  type anyClass = new (...args: any[]) => any;
 
 }
 
