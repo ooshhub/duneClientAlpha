@@ -25,7 +25,6 @@ export class ServiceProviderRegistry {
   // Secondary Service Providers - can be dummy providers
   #debugLogger: DebugProviderInterface|DummyProvider;
   #debugReceiver: DebugReceiverProviderInterface|DummyProvider;
-  // #audioProvider: ServiceProvider|DummyProvider
 
   constructor(
     localHubProvider: LocalHubServiceInterface = defaultProviders.localHubProvider,
@@ -34,8 +33,8 @@ export class ServiceProviderRegistry {
   ) {
     this.#localHubProvider = localHubProvider;
     this.#debugLogger = debugLogger;
-    if (!this.#debugLogger.isLinked) this.#debugLogger.registerEventHub(this.#localHubProvider);
     this.#debugReceiver = debugReceiver;
+    if (!this.#debugLogger.isLinked) this.#debugLogger.registerEventHub(this.#localHubProvider);
     if (!this.#debugReceiver.isLinked) this.#debugReceiver.registerEventHub(this.#localHubProvider);
   }
 
