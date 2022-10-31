@@ -1,4 +1,5 @@
 import { mainHub, debug, CONFIG, electronRoot, Win } from '../main';
+import { DuneEvent } from '../shared/Events/DuneEvent';
 import { Helpers } from '../shared/Helpers';
 import { NodeHelpers } from './NodeHelpers';
 // import { getMenuItems } from '../client/mainMenu/menuItems.mjs';
@@ -70,7 +71,7 @@ export const main = (() => {
       else if (r === 'chat') hbsPath = `${CONFIG.PATH.HBS}/chat.hbs`;
       else if (r === 'lobby') hbsPath = `${CONFIG.PATH.HBS}/lobby.hbs`, hbsData = data;
       const resHtml = await NodeHelpers.compileHbs(hbsPath, hbsData);
-      if (resHtml) mainHub.trigger('renderer/responseHtml', {req: r, html: resHtml});
+      if (resHtml) mainHub.trigger(new DuneEvent('renderer/responseHtml', {req: r, html: resHtml}));
       else debug.log([`Error loading HTML`, resHtml], 'error');
     }));
   }
@@ -78,7 +79,7 @@ export const main = (() => {
     if (!template || !container || !data) return debug.log(`Missing data for Mentat render`, 'warn');
     const responseHtml = await NodeHelpers.compileHbs(`${CONFIG.PATH.HBS}/${template}`, {house: data});
     // responseHtml = addTooltips(responseHtml);
-    if (responseHtml) mainHub.trigger(`renderer/responseMentat`, { target: container, html: responseHtml });
+    if (responseHtml) mainHub.trigger(new DuneEvent(`renderer/responseMentat`, { target: container, html: responseHtml }));
     else debug.log([`Error loading HTML`, responseHtml], 'error');
   }
 
@@ -100,7 +101,7 @@ export const main = (() => {
     debug.log(CONFIG.userSettings);
     if (!options.noSave) saveConfig();
   }
-  const getConfig = async () => mainHub.trigger('renderer/responseConfig', { CONFIG });
+  const getConfig = async () => mainHub.trigger(new DuneEvent('renderer/responseConfig', { CONFIG }));
   const saveConfig = async () => NodeHelpers.saveFile(`${CONFIG.PATH.USERDATA}/userSettings.json`, JSON.stringify(CONFIG.userSettings));
 
   const exitAndSave = async () => { // erm.... saveAndExit would be a more sensible name
@@ -120,9 +121,9 @@ export const main = (() => {
   const ioClipboard = async (inputString) => {
     if (inputString) 	electronRoot.clipboard.writeText(`${inputString}`);
     else {
-      let content = await 	electronRoot.clipboard.readText();
+      let content = await electronRoot.clipboard.readText();
       content = content ?? 'no text';
-      mainHub.trigger('renderer/responseClipboard', content);
+      mainHub.trigger(new DuneEvent('renderer/responseClipboard', content));
     }
   }
 

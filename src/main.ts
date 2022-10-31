@@ -1,9 +1,10 @@
 // Legacy:
 import * as electron from 'electron';
 import { Helpers } from './shared/Helpers';
-import { EventHub } from './shared/EventHub';
+import { EventHub } from './shared/Events/EventHub';
 import { DebugLogger } from './shared/DebugLogger';
 import { initConfig } from './main/initLoader';
+import { DuneEvent } from './shared/Events/DuneEvent';
 
 export const CONFIG: genericJson = { DEBUG: 1 };
 export const mainHub = new EventHub('main');
@@ -88,7 +89,7 @@ const startElectron = async (): Promise<void> => {
   else mainFrame.loadFile(`${CONFIG.PATH.ROOT}/renderer/index.html`);
   
 	Win.Main = mainFrame;
-	mainHub.trigger('mainWindowReady', { win: mainFrame });
+	mainHub.trigger(new DuneEvent('mainWindowReady', { win: mainFrame }));
 
 	let coreLoad = false;
 	mainHub.once('coreLoadComplete', () => coreLoad = true);
@@ -109,7 +110,7 @@ const startElectron = async (): Promise<void> => {
 			// if (!mainFrame.isVisible()) {
 				mainFrame.show();
 				mainFrame.setOpacity(1.0);
-				mainHub.trigger('renderer/fadeElement', 'main#mainmenu', 'in', 500);
+				mainHub.trigger(new DuneEvent('renderer/fadeElement', ['main#mainmenu', 'in', 500]));
 				// loadingFrame.destroy();
 			// }
 		});

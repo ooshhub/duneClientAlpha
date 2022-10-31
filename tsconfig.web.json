@@ -1,13 +1,13 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/@types/env.d.ts",
     "src/preload/*.d.ts",
     "src/renderer/app/vue.ts",
-    "src/shared/*",
     "src/renderer/app/**/*.ts",
-    "src/renderer/app/**/*",
-    "src/@types"
+    "src/renderer/app/**/*.*js",
+    "src/renderer/app/**/*.js",
+    "src/shared/**/*.*ts",
+    "src/@types/**/*"
   ],
   "exclude": ["**/*.vue"],
   "compilerOptions": {

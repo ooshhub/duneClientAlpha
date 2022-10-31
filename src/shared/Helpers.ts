@@ -55,7 +55,7 @@ export class Helpers {
    * @param timeStep - interval to check condition at in milliseconds
    * @returns 
    */
-  static async watchCondition(func: (...args) => boolean, message: string, timeout=5000, timeStep=100): Promise<boolean> {
+  static async watchCondition(func: (...args: any) => boolean, message?: string, timeout = 5000, timeStep = 100): Promise<boolean> {
     return new Promise(res => {
       let elapsed = 0;
       const loop = setInterval(() => {

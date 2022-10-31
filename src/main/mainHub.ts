@@ -1,5 +1,6 @@
 // main process event hub
 import { mainHub, electronRoot, debug } from '../main';
+import { DuneEvent } from '../shared/Events/DuneEvent';
 import { main } from './mainFunctions.js';
 
 // First round of handlers
@@ -15,7 +16,7 @@ mainHub.once('mainWindowReady', ({ win }) => {
   });
 	electronRoot.ipcMain.on('receiveFromRenderer', async (_ipcEvent, event, ...args) => {
     console.log("received message from renderer");
-    mainHub.trigger(event, ...args);
+    mainHub.trigger(new DuneEvent(event, args));
   });
 	// save on quit
 	electronRoot.app.on('before-quit', (ev) => { ev.preventDefault(); main.exitAndSave(); });

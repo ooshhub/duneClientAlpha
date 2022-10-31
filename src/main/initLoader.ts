@@ -2,6 +2,7 @@ import { Helpers } from '../shared/Helpers';
 import { NodeHelpers } from './NodeHelpers';
 import { mainHub, debug, electronRoot } from '../main';
 import * as http from 'http';
+import { DuneEvent } from '../shared/Events/DuneEvent';
 
 export const initConfig = async (configReference): Promise<boolean> => {
 	const electronApp = electronRoot.app;
@@ -58,7 +59,7 @@ const getUserSettings = async (configReference): Promise<Error | void> => {
 			if (!/^[A-Za-z]_/.test(`${settings.player.pid}`)) {
 				settings.player.pid = Helpers.generatePlayerId(process?.env?.USERNAME ?? '');
 				debug.log(`New player ID generated: ${settings.player.id}`);
-				mainHub.trigger('saveConfig', settings);
+				mainHub.trigger(new DuneEvent('saveConfig', settings));
 			}
 			if ('playerName' !in settings.player) {
 				settings.player.playerName = process.env?.USERNAME || `newPlayer_${Math.floor(Math.random()*999)}`;

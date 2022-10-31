@@ -1,15 +1,17 @@
 import { createApp } from 'vue';
+import { DuneEvent } from '../../shared/Events/DuneEvent';
+import { IpcEvent } from '../../shared/Events/IpcEvent';
 import App from './App.vue';
 import { ServiceProviderRegistry } from './serviceProviders/ServiceProviderRegistry';
 
 // IPC comms
 const initIpc = () => {
-  window.rendererToHub.receive('sendToRenderer', async (event, data) => {
-    console.warn(`event "${event}" requires Ack, ensure it is handled`);
-    localHub.trigger(event, data);
+  window.rendererToHub.receive('sendToRenderer', async ({eventName, eventData}: IpcEvent) => {
+    // console.warn(`event "${eventName}" requires Ack, ensure it is handled`);
+    localHub.trigger(new DuneEvent(eventName, eventData));
   });
-  localHub.for('main', async (event, ...args) => {
-    window.rendererToHub.send('sendToMain', event, ...args);
+  localHub.for('main', async ({ eventName, eventData }: DuneEvent) => {
+    window.rendererToHub.send('sendToMain', new IpcEvent(eventName, eventData));
   });
 }
 
@@ -32,4 +34,4 @@ app.mount('#app');
 
 initIpc();
 
-localHub.trigger('main/coreLoadComplete');
+localHub.trigger(new DuneEvent('main/coreLoadComplete'));

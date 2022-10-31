@@ -3,10 +3,10 @@
  * Service providers cannot be written to
  */
 
-import { LocalHubServiceInterface } from "./LocalHubProviderInterface";
+import { LocalHubServiceInterface } from "../../../shared/Events/LocalHubProviderInterface";
 // import { ServerLinkServiceInterface } from "./ServerLinkProviderInterface";
 
-import { EventHub } from "../../../shared/EventHub";
+import { EventHub } from "../../../shared/Events/EventHub";
 import { DebugLogger, DebugReceiver } from "../../../shared/DebugLogger";
 import { DebugProviderInterface, DebugReceiverProviderInterface } from "./DebugProviderInterface";
 

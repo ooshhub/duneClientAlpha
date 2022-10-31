@@ -5,13 +5,13 @@ const serverUrl = ``;
 const buttonClasses = "block mx-auto rounded bg-amber-600 my-8 text-xl px-8 py-2 text-white border-white border-2";
 
 const launchServer = () => {
-
+  console.log('Launch...');
 }
   
 </script>
 
 <template>
-  <div class="text-sm text-slate-500 bg-amber-900 text-center py-12">
+  <div class="text-sm text-slate-400 bg-amber-900 text-center py-12 mx-auto">
     <button :class="buttonClasses" @click="launchServer">Launch Server</button>
     <form action="">
       <button :class="buttonClasses" class="mt-12">Connect to server</button>

@@ -3,11 +3,11 @@
 import type { BrowserWindow } from 'electron';
 
 declare global {
+
   type ElectronBrowserWindow = BrowserWindow;
 
   interface Window {
     rendererToHub: any;
-    hub: any,
-    cunt: any
+    Dune: any;
   }
 }

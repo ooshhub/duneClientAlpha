@@ -1,5 +1,5 @@
-import { EventHub } from "../../../shared/EventHub";
-import { LocalHubServiceInterface } from "./LocalHubProviderInterface";
+import { EventHub } from "../../../shared/Events/EventHub";
+import { LocalHubServiceInterface } from "../../../shared/Events/LocalHubProviderInterface";
 
 export interface DebugProviderInterface {
   registerEventHub: (eventHub: EventHub|LocalHubServiceInterface) => void,

@@ -1,6 +1,7 @@
 import { DebugProviderInterface, DebugReceiverProviderInterface } from "../renderer/app/serviceProviders/DebugProviderInterface";
-import { LocalHubServiceInterface } from "../renderer/app/serviceProviders/LocalHubProviderInterface";
-import { EventHub } from "./EventHub";
+import { LocalHubServiceInterface } from "./Events/LocalHubProviderInterface";
+import { EventHub } from "./Events/EventHub";
+import { DuneEvent } from "./Events/DuneEvent";
 
 // TODO: jsDocs, and provide a switch for turning logging on and off in both receiver and logger
 
@@ -32,14 +33,14 @@ export class DebugLogger implements DebugProviderInterface {
     this.#hub = eventHub;
   }
 
-  log(...args) { this.#sendLog('log', null, ...args) }
-  info(...args) { this.#sendLog('info', null, ...args) }
-  warn(...args) { this.#sendLog('warn', null, ...args) }
-  error(...args) { this.#sendLog('error', new Error().stack ?? '', ...args) }
+  log(...args: any[]) { this.#sendLog('log', null, ...args) }
+  info(...args: any[]) { this.#sendLog('info', null, ...args) }
+  warn(...args: any[]) { this.#sendLog('warn', null, ...args) }
+  error(...args: any[]) { this.#sendLog('error', new Error().stack ?? '', ...args) }
 
   #sendLog(style: string, stack: string|null, ...msgs: any[]): void {
     if (!this.#hub) return;
-    if (this.#debugFlag) this.#hub.trigger(`${this.#receiver}/${this.#loggerName}Log`, { msgs, style, stack }); 
+    if (this.#debugFlag) this.#hub.trigger(new DuneEvent(`${this.#receiver}/${this.#loggerName}Log`, { msgs, style, stack })); 
     if (this.#logToConsole && console[style]) console[style](...msgs);
   }
 
