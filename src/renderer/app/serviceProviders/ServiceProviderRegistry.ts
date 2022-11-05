@@ -34,6 +34,7 @@ export class ServiceProviderRegistry {
     this.#localHubProvider = localHubProvider;
     this.#debugLogger = debugLogger;
     this.#debugReceiver = debugReceiver;
+    
     if (!this.#debugLogger.isLinked) this.#debugLogger.registerEventHub(this.#localHubProvider);
     if (!this.#debugReceiver.isLinked) this.#debugReceiver.registerEventHub(this.#localHubProvider);
   }
