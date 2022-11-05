@@ -12,6 +12,6 @@ export interface ServerLinkProviderInterface {
 
   receiveFromServer: (...args: any[]) => Promise<void>;
 
-  destroyConnection: () => Promise<boolean>;
+  destroyConnection: () => Promise<void>;
 
 }
