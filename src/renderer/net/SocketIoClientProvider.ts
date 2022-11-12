@@ -3,7 +3,7 @@ import { ERRORS } from "../../shared/errors/errorDefinitions";
 import { DuneEvent } from "../../shared/events/DuneEvent";
 import { Helpers } from "../../shared/Helpers";
 import { DebugProviderInterface } from "../serviceProviders/DebugProviderInterface";
-import { EventRoutingInterface } from "../serviceProviders/EventRoutingInterface";
+import { EventRoutingInterface } from "../../shared/events/EventRoutingInterface";
 import { ServerLinkProviderInterface } from "../serviceProviders/ServerLinkProviderInterface";
 import { eventDomains } from "./EventRouting";
 import { SocketIoConnectionHandler } from "./SocketIoConnectionHandler";

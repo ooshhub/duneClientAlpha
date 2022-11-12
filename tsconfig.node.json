@@ -2,10 +2,12 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
   "include": [
     "electron.vite.config.*",
-    "src/main/*",
+    "src/main/**/*.*ts",
+    "src/main/**/*.ts",
     "src/preload/*",
     "src/main.ts",
     "src/shared/**/*.*ts",
+    "src/shared/**/*.ts",
     "src/@types/*.d.ts", "src/renderer/events/EventIndex.ts", "src/renderer/events/EventIndex.ts",
   ],
   "exclude": [
