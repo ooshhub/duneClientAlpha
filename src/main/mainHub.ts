@@ -1,6 +1,7 @@
+// Legacy: 
 // main process event hub
 import { mainHub, electronRoot, debug } from '../main';
-import { DuneEvent } from '../shared/Events/DuneEvent';
+import { DuneEvent } from '../shared/events/DuneEvent';
 import { main } from './mainFunctions.js';
 
 // First round of handlers

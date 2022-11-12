@@ -1,5 +1,5 @@
 import { mainHub, debug, CONFIG, electronRoot, Win } from '../main';
-import { DuneEvent } from '../shared/Events/DuneEvent';
+import { DuneEvent } from '../shared/events/DuneEvent';
 import { Helpers } from '../shared/Helpers';
 import { NodeHelpers } from './NodeHelpers';
 // import { getMenuItems } from '../client/mainMenu/menuItems.mjs';

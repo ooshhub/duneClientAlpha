@@ -3,8 +3,9 @@
   "include": [
     "src/preload/*.d.ts",
     "src/renderer/app/vue.ts",
-    "src/renderer/app/**/*.ts",
-    "src/renderer/app/**/*.*js",
+    "src/renderer/**/*.ts",
+    "src/renderer/**/*.*js",
+    "src/renderer/**/*.js",
     "src/renderer/app/**/*.js",
     "src/shared/**/*.*ts",
     "src/@types/**/*"

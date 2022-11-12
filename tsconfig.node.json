@@ -6,7 +6,7 @@
     "src/preload/*",
     "src/main.ts",
     "src/shared/**/*.*ts",
-    "src/@types/*.d.ts",
+    "src/@types/*.d.ts", "src/renderer/events/EventIndex.ts", "src/renderer/events/EventIndex.ts",
   ],
   "exclude": [
     "clientBuild/**/*",

@@ -1,5 +1,5 @@
 // shared helpers for Browser environment, NO NODE IMPORTS
-import * as convert from './Colours';
+import * as convert from './Colours.js';
 
 type ParallelLoaderRequest = {
   timeout?: number,

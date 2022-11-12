@@ -1,10 +1,10 @@
 // Legacy:
 import * as electron from 'electron';
 import { Helpers } from './shared/Helpers';
-import { EventHub } from './shared/Events/EventHub';
+import { EventHub } from './shared/events/EventHub';
 import { DebugLogger } from './shared/DebugLogger';
 import { initConfig } from './main/initLoader';
-import { DuneEvent } from './shared/Events/DuneEvent';
+import { DuneEvent } from './shared/events/DuneEvent';
 
 export const CONFIG: genericJson = { DEBUG: 1 };
 export const mainHub = new EventHub('main');

@@ -8,6 +8,8 @@ declare global {
 
   type dummyFunction = (...args: any[]) => void;
 
+  type anyFunction = (...args: any[]) => any;
+
   type DummyProvider = { [key: string]: dummyFunction; }
 
 }

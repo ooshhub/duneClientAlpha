@@ -1,5 +1,5 @@
-import { EventHub } from "../../../shared/Events/EventHub";
-import { LocalHubServiceInterface } from "../../../shared/Events/LocalHubProviderInterface";
+import { EventHub } from "../../shared/events/EventHub";
+import { LocalHubServiceInterface } from "../../shared/events/LocalHubProviderInterface";
 
 export interface DebugProviderInterface {
   registerEventHub: (eventHub: EventHub|LocalHubServiceInterface) => void,
@@ -11,8 +11,6 @@ export interface DebugProviderInterface {
 }
 
 export interface DebugReceiverProviderInterface {
-  registerHandlers: () => void;
-  registerEventHub: (eventHub: EventHub|LocalHubServiceInterface) => void,
-  get isLinked(): boolean,
   get handlers(): string[];
+  registerHandlers: anyFunction;
 }

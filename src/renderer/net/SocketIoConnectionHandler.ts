@@ -29,6 +29,7 @@ export class SocketIoConnectionHandler {
       }
       case SocketIoConnectionEventTypes.RECONNECT_FAILED: {
         this.#handleReconnectFailedEvent(eventData);
+        break;
       }
       default: {
         console.warn(`Unknown SocketIO connection event handed to ${this.constructor.name}.`);

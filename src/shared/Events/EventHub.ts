@@ -1,5 +1,8 @@
 // Legacy:
 
+import { eventDomains, EventRouting } from "../../renderer/net/EventRouting";
+import { DuneError } from "../errors/DuneError";
+import { ERRORS } from "../errors/errorDefinitions";
 import { DuneEvent } from "./DuneEvent";
 import { LocalHubServiceInterface } from "./LocalHubProviderInterface";
 
@@ -10,10 +13,16 @@ export class EventHub implements LocalHubServiceInterface {
 
   #registeredEvents = {};
   #registeredOneTimeEvents = {};
-  #registeredDestinations = {};
+  // #registeredDestinations = {};
+
+  #router: EventRouting|null = null;
 
   constructor(name = 'NewHub') {
     this.name = name;
+  }
+
+  registerEventRouter(router: EventRouting) {
+    this.#router = router;
   }
 
   name: string;
@@ -47,13 +56,6 @@ export class EventHub implements LocalHubServiceInterface {
     }
   }
 
-  async for(destinationHubName: string, callback: (...args: any[]) => any, priority?: number) {
-    if (typeof(callback) !== 'function') return console.warn(`${this.name}: destination callback must be a function!`);
-    if (!this.#registeredDestinations[destinationHubName]) this.#registeredDestinations[destinationHubName] = [];
-    const targetIndex = priority ? Math.min(priority, this.#registeredDestinations[destinationHubName].length - 1) : this.#registeredDestinations[destinationHubName].length;
-    this.#registeredDestinations[destinationHubName][targetIndex] = callback;
-  }
-
   // Supply a '/' in event name to signify a destination and send to a 'for' registered handler
   // 'main/requestHtml' will send the event to the 'for' handler 'main', with {event: requestHtml, data: {...args}} as parameters
   async trigger(duneEvent: DuneEvent) {
@@ -62,14 +64,14 @@ export class EventHub implements LocalHubServiceInterface {
     // Check 'for' handlers first, to send event to correct event hub
     if (/\//.test(eventName)) {
       const parts = eventName.match(/^(\w+)\/(\w+)/);
-      if (parts && parts[1] && parts[2]) this.triggerFor(parts[1], new DuneEvent(parts[2], eventData));
+      if (parts && parts[1] && parts[2]) this.passToEventRouting(parts[1], new DuneEvent(parts[2], eventData));
       else console.warn(`${this.name}: Bad 'for' trigger: ${eventName}`);
     } else {
       // Check 'once' one time events next
 			if (this.#registeredOneTimeEvents[eventName]?.length) {
 				this.#registeredOneTimeEvents[eventName].forEach((cb, i) => {
 					if (typeof cb !== 'function') console.log(`${this.name}: Error - oneTimeEvent[${i}] is not a function`, cb);
-					else cb(eventData);
+					else cb(duneEvent);
 					this.#registeredOneTimeEvents[eventName][i] = null;
 				});
 				this.#registeredOneTimeEvents[eventName] = this.#registeredOneTimeEvents[eventName].filter(v=>v);
@@ -77,12 +79,15 @@ export class EventHub implements LocalHubServiceInterface {
       // And finally, normal 'on' events
       (this.#registeredEvents[eventName]||[]).forEach(cb => {
 				if (typeof cb !== 'function') console.log(`${this.name}: Error - ${cb} is not a function`, this.#registeredEvents);
-				else cb?.(eventData);
+				else cb?.(duneEvent);
 			});
     }
   }
 
-  async triggerFor(destination: string, duneEvent: DuneEvent) {
-    (this.#registeredDestinations[destination]||[]).forEach(cb => cb(duneEvent));
+  async passToEventRouting(destination: string, duneEvent: DuneEvent) {
+    if (!this.#router) throw new DuneError(ERRORS.EVENT_ROUTING_NOT_FOUND);
+    const domain = eventDomains[destination.toUpperCase()];
+    if (!domain) throw new DuneError(ERRORS.UNKNOWN_EVENT_DOMAIN, [ destination ]);
+    this.#router.receiveEvent(domain, duneEvent);
   }
 }

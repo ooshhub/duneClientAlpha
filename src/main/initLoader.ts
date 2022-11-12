@@ -2,7 +2,7 @@ import { Helpers } from '../shared/Helpers';
 import { NodeHelpers } from './NodeHelpers';
 import { mainHub, debug, electronRoot } from '../main';
 import * as http from 'http';
-import { DuneEvent } from '../shared/Events/DuneEvent';
+import { DuneEvent } from '../shared/events/DuneEvent';
 
 export const initConfig = async (configReference): Promise<boolean> => {
 	const electronApp = electronRoot.app;
