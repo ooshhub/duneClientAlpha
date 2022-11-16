@@ -1,5 +1,5 @@
-import { EventRoutingInterface } from "../../shared/events/EventRoutingInterface";
+import { EventRouting } from "../../shared/events/EventRouting";
 
-export class MainEventRouting implements EventRoutingInterface {
+export class MainEventRouting extends EventRouting {
   
 }

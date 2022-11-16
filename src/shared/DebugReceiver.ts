@@ -1,5 +1,5 @@
+import { RendererEventIndex } from "../renderer/events/RendererEventIndex";
 import { DebugReceiverProviderInterface } from "../renderer/serviceProviders/DebugProviderInterface";
-import { EventIndex } from "../renderer/events/EventIndex";
 import { DuneEvent } from "./events/DuneEvent";
 
 // Receiver for remote loggers. Lives on the rendererHub for dunePrototype.
@@ -30,7 +30,7 @@ export class DebugReceiver implements DebugReceiverProviderInterface {
 
 	registerHandlers() {
     const eventNames = Object.keys(this.#logSources).map(source => `${source}Log`);
-		EventIndex.registerEvents(eventNames, (event: DuneEvent) => this.#processLog(event));
+		RendererEventIndex.registerEvents(eventNames, (event: DuneEvent) => this.#processLog(event));
     this.#registeredHandlers.push(...eventNames);
 	}
 	get handlers() { return this.#registeredHandlers }

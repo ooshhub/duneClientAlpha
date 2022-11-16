@@ -14,7 +14,7 @@ import { SocketIoClientProvider } from "../net/SocketIoClientProvider";
 import { IpcMessagingInterface } from "./IpcMessagingInterface";
 import { IpcMessaging } from "../net/IpcMessaging";
 import { DebugReceiver } from "../../shared/DebugReceiver";
-import { EventIndex } from "../events/EventIndex";
+import { RendererEventIndex } from "../events/RendererEventIndex";
 
 const defaultProviders = {
   localHubProvider: new EventHub('RendererHub'),
@@ -49,7 +49,7 @@ export class ServiceProviderRegistry {
   ) {
     // Set up local hub and route indexing first
     this.#localHubProvider = localHubProvider;
-    EventIndex.eventHub = localHubProvider;
+    RendererEventIndex.eventHub = localHubProvider;
     // Then all other event messaging. Everything from here can rely on EventIndex routes being active
     this.#serverLinkProvider = serverLinkProvider;
     this.#ipcMessagingProvider = ipcMessagingProvider;

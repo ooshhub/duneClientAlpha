@@ -5,7 +5,6 @@ import { NodeHelpers } from './NodeHelpers';
 // import { getMenuItems } from '../client/mainMenu/menuItems.mjs';
 // import { startLocalServer } from '../server/net/localServer.mjs';
 
-const server = {};
 
 export const main = (() => {
   /*
@@ -50,11 +49,11 @@ export const main = (() => {
   //   }
   // }
 
-  const killServer = async () => {
-    debug.log(`Destroying server...`);
-    try { await server?.local?.destroy() } catch(e) { debug.log(e.msg??e.message??`Server error`, 'error') }
-    server.local = null;
-  }
+  // const killServer = async () => {
+  //   debug.log(`Destroying server...`);
+  //   try { await server?.local?.destroy() } catch(e) { debug.log(e.msg??e.message??`Server error`, 'error') }
+  //   server.local = null;
+  // }
 
   /*
   // HTML
@@ -128,7 +127,7 @@ export const main = (() => {
   }
 
   return {
-    /* startServer, */ killServer,
+    // /* startServer, */ killServer,
     renderHtml, renderMentatHtml, inspectEl,
     modifyConfig, getConfig, exitAndSave,
     ioClipboard

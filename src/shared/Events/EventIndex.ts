@@ -1,6 +1,6 @@
-import { EventHub } from "../../shared/events/EventHub";
-import { LocalHubServiceInterface } from "../../shared/events/LocalHubProviderInterface";
-import { Helpers } from "../../shared/Helpers";
+import { EventHub } from "./EventHub";
+import { LocalHubServiceInterface } from "./LocalHubProviderInterface";
+import { Helpers } from "../Helpers";
 
 export class EventIndex {
 
@@ -20,13 +20,3 @@ export class EventIndex {
 
 }
 
-export const EVENTS = {
-  DEBUGGER: {
-    PROCESSLOG: [
-      'rendererLog',
-      'socketLog',
-      'serverLog',
-      'mainLog'
-    ],
-  }
-}

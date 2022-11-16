@@ -1,9 +1,10 @@
 import { DuneError } from "../../shared/errors/DuneError";
 import { ERRORS } from "../../shared/errors/errorDefinitions";
 import { DuneEvent } from "../../shared/events/DuneEvent";
+import { EventRouting } from "../../shared/events/EventRouting";
+import { eventDomains } from "../../shared/events/EventRoutingInterface";
 import { IpcEvent } from "../../shared/events/IpcEvent";
 import { IpcMessagingInterface } from "../serviceProviders/IpcMessagingInterface";
-import { eventDomains, EventRouting } from "./EventRouting";
 
 export class IpcMessaging implements IpcMessagingInterface {
 
