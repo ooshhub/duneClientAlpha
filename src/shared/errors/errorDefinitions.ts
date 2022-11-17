@@ -1,6 +1,7 @@
 export const ERRORS = {
   // Classes, types
   ONLY_ONE_INSTANCE_ALLOWED: `Only one instance of %0 can be instantiated.`,
+	MUST_OVERRIDE_METHOD: `%0 failed to override method %1`,
 
   // Service Providers
   SERVICE_PROVIDER_ERROR: `ServiceProvider %0 could not be reached.`,

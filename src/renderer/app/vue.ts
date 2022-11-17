@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { DuneEvent } from '../../shared/events/DuneEvent';
 import App from './App.vue';
-import { EventRouting } from '../net/EventRouting';
+import { EventRouting } from '../net/RendererEventRouting';
 import { ServiceProviderRegistry } from '../serviceProviders/ServiceProviderRegistry';
 
 // Initialise Vue

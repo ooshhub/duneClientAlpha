@@ -1,5 +1,5 @@
 import { DuneEvent } from "./DuneEvent";
-import { eventDomains, EventRoutingInterface } from "./EventRoutingInterface";
+import { eventDomains, EventRoutingInterface } from "../serviceProviders/EventRoutingInterface";
 
 export class EventRouting implements EventRoutingInterface {
 

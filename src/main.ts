@@ -118,6 +118,8 @@ const startElectron = async (): Promise<void> => {
 		});
 	});
 
+	mainFrame.webContents.send()
+
 	// TODO: These can go somewhere later
 	const inspectEl = async ({ x,y }) => {
     if (!mainFrame || !parseInt(x) || !parseInt(y)) {

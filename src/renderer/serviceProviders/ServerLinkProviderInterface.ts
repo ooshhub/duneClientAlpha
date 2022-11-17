@@ -1,6 +1,6 @@
 import { DuneEvent } from "../../shared/events/DuneEvent";
 import { SocketConfigObject } from "../net/SocketIoClientProvider";
-import { EventRoutingInterface } from "../../shared/events/EventRoutingInterface";
+import { EventRoutingInterface } from "../../shared/serviceProviders/EventRoutingInterface";
 
 export interface ServerLinkProviderInterface {
 
