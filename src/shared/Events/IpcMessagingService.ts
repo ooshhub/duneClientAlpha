@@ -1,48 +1,66 @@
-import { DuneError } from "../../shared/errors/DuneError";
-import { ERRORS } from "../../shared/errors/errorDefinitions";
-import { DuneEvent } from "../../shared/events/DuneEvent";
-import { EventRouting } from "../../shared/events/EventRouting";
-import { IpcMessagingInterface } from "../../shared/serviceProviders/IpcMessagingInterface";
+import { IpcMain, IpcRenderer, WebContents } from "electron";
+import { DuneError } from "../errors/DuneError";
+import { ERRORS } from "../errors/errorDefinitions";
+import { DuneEvent } from "./DuneEvent";
+import { EventRouting } from "./EventRouting";
+import { IpcMessagingInterface } from "../serviceProviders/IpcMessagingInterface";
+import { eventDomains } from "../serviceProviders/EventRoutingInterface";
 
-export enum IpcOrigins {
-	RENDERER = 'renderer',
-	MAIN		 = 'main',
+type IpcInbound = {
+	interface:  IpcMain|IpcRenderer;
+	channelName: string;
 }
-
-type ElectronIpcSender = (channel: string, ...args: any[]) => void;
+type IpcOutbound = {
+	interface:  WebContents|IpcRenderer;
+	channelName: string;
+}
 
 export class IpcMessagingService implements IpcMessagingInterface {
 
   static instance: IpcMessagingService;
 
-  #receiver: EventRouting|null = null;
-	#dispatcher: any;
+  #eventRouter: EventRouting|null = null;
+	#ipcSender: IpcOutbound;
+	#ipcReceiver: IpcInbound;
+	#hostDomain: eventDomains|null = null;
 	name: string;
 
-  constructor({ name, receiver, dispatcher, channelName }: { name: string, receiver: EventRouting, dispatcher: Electron.IpcRenderer, channelName: string }) {
+  constructor(name: string, ipcSender: IpcOutbound, ipcReceiver: IpcInbound) {
     if (IpcMessagingService.instance) throw new DuneError(ERRORS.ONLY_ONE_INSTANCE_ALLOWED, [this.constructor.name]);
 		this.name = name;
-		this.#receiver = receiver;
-		this.#dispatcher = dispatcher;
-		this.#registerMessageListener();
+		this.#ipcSender = ipcSender;
+		this.#ipcReceiver = ipcReceiver;
+		this.#registerListener();
     this.#registerSelf();
   }
+	#registerListener() {
+		this.#ipcReceiver.interface.on(this.#ipcReceiver.channelName, (_ipcEvent: any, eventName: string, eventData: genericJson) => this.#receiveIpcMessage(eventName, eventData));
+	}
   #registerSelf() {
     IpcMessagingService.instance = this;
   }
 
-	#dispatchMessage(event: DuneEvent) {
-		this.#dispatcher
+	registerEventRouter(eventRouter: EventRouting, hostDomain: eventDomains) {
+    this.#eventRouter = eventRouter;
+		this.#hostDomain = hostDomain;
+    return true;
+  }
+
+	async #dispatchIpcMessage(event: DuneEvent) {
+		const { eventName, eventData } = event;
+		this.#ipcSender.interface.send(this.#ipcSender.channelName, eventName, eventData);
+	}
+	async #receiveIpcMessage(eventName: string, eventData: genericJson) {
+		if (this.#eventRouter && this.#hostDomain) {
+			this.#eventRouter.receiveEvent(this.#hostDomain, new DuneEvent(eventName, eventData))
+		}
+		else {
+			throw new DuneError(ERRORS.EVENT_ROUTING_NOT_FOUND, [ this.name ]);
+		}
 	}
 
-	registerEventRouter(eventRouter: EventRouting) {
-    this.#router = eventRouter;
-    this.#registerReceiveFromMainProcessListener();
-    return true;
-  } 
-
 	async sendMessage(event: DuneEvent) {
-		this.#dispatchMessage(event);
+		this.#dispatchIpcMessage(event);
 	}
 
 }

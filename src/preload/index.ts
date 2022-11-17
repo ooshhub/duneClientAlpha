@@ -10,13 +10,14 @@ const channels = {
 // Context bridge for messaging: Main process <==> Renderer 
 if (process.contextIsolated) {
   contextBridge.exposeInMainWorld('rendererToHub', {
-    send: async (channel, event, ...args) => {
-      if (channels.send.includes(channel)) ipcRenderer.send('sendToMain', event, ...args);
+    send: async (channel: string, eventName: string, eventData: genericJson) => {
+      if (channels.send.includes(channel)) ipcRenderer.send('sendToMain', eventName, eventData);
       else console.warn(`Message from renderer was rejected: "${channel}" is not a valid token`);
     },
-    receive: async (channel, evHandler) => {
-      if (channels.receive.includes(channel)) ipcRenderer.on(channel, (_ipcEvent, event, ...args) => {
-        evHandler(event, ...args);
+    on: async (channel: string, evHandler: (...args: any[]) => void) => {
+			console.log('FUKN RECCCCCD');
+      if (channels.receive.includes(channel)) ipcRenderer.on(channel, (_ipcEvent, eventName, eventData) => {
+        evHandler(_ipcEvent, eventName, eventData);
       });
       else console.warn(`Message from main process was rejected: "${channel}" is not a valid token`);
     }

@@ -9,18 +9,20 @@ import { LocalHubServiceInterface } from "../../shared/events/LocalHubProviderIn
 import { EventHub } from "../../shared/events/EventHub";
 import { DebugLogger } from "../../shared/DebugLogger";
 import { DebugProviderInterface, DebugReceiverProviderInterface } from "../../shared/serviceProviders/DebugProviderInterface";
-import { ServerLinkProviderInterface } from "./ServerLinkProviderInterface";
+import { ServerLinkProviderInterface } from "../net/ServerLinkProviderInterface";
 import { SocketIoClientProvider } from "../net/SocketIoClientProvider";
 import { IpcMessagingInterface } from "../../shared/serviceProviders/IpcMessagingInterface";
-import { IpcMessaging, IpcOrigins } from "../net/IpcMessaging";
 import { DebugReceiver } from "../../shared/DebugReceiver";
 import { RendererEventIndex } from "../events/RendererEventIndex";
+import { IpcMessagingService } from "../../shared/events/IpcMessagingService";
 
 const defaultProviders = {
   localHubProvider: new EventHub('RendererHub'),
   serverLinkProvider: new SocketIoClientProvider({ player: {}, server: {} }),
-  ipcMessagingProvider: new IpcMessaging({ name: 'rendererIpcService', origin: IpcOrigins.RENDERER }),
-
+  ipcMessagingProvider: new IpcMessagingService(
+		'rendererIpcService', { interface: window.rendererToHub,	channelName: 'sendToMain' },
+		{ interface: window.rendererToHub,	channelName: 'sendToRenderer' }
+	),
   debugLogger: new DebugLogger('renderer', null),
   debugReceiver: new DebugReceiver,
 }
@@ -65,7 +67,7 @@ export class ServiceProviderRegistry {
 
   get localHubProvider() { return this.#localHubProvider }
   get serverLinkProvider() { return this.#serverLinkProvider }
-  get ipcMessagingProvicer() { return this.#ipcMessagingProvider }
+  get ipcMessagingProvider() { return this.#ipcMessagingProvider }
 
   get debugLogger() { return this.#debugLogger }
   get debugReceiver() { return this.#debugReceiver }

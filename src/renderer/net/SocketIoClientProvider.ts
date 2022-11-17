@@ -3,9 +3,8 @@ import { ERRORS } from "../../shared/errors/errorDefinitions";
 import { DuneEvent } from "../../shared/events/DuneEvent";
 import { Helpers } from "../../shared/Helpers";
 import { DebugProviderInterface } from "../../shared/serviceProviders/DebugProviderInterface";
-import { EventRoutingInterface } from "../../shared/serviceProviders/EventRoutingInterface";
-import { ServerLinkProviderInterface } from "../serviceProviders/ServerLinkProviderInterface";
-import { eventDomains } from "./RendererEventRouting";
+import { eventDomains, EventRoutingInterface } from "../../shared/serviceProviders/EventRoutingInterface";
+import { ServerLinkProviderInterface } from "./ServerLinkProviderInterface";
 import { SocketIoConnectionHandler } from "./SocketIoConnectionHandler";
 import { Socket, io } from './lib/socket.io.esm.min.js';
 
@@ -59,8 +58,10 @@ export class SocketIoClientProvider implements ServerLinkProviderInterface {
   #timeout = 10000;
 
   #debug: DebugProviderInterface|Console;
+	name: string;
 
   constructor(socketProviderConfig: genericJson = {}) {
+		this.name = 'SocketClient';
     this.state = SocketStates.INIT;
     this.#debug = socketProviderConfig.logger ?? console;
     this.debug.log(`Initialised socket client provider.`);
@@ -133,7 +134,7 @@ export class SocketIoClientProvider implements ServerLinkProviderInterface {
   }
 
   async receiveFromServer(event: DuneEvent) {
-    if (!this.#eventRouter) throw new DuneError(ERRORS.EVENT_ROUTING_NOT_FOUND);
+    if (!this.#eventRouter) throw new DuneError(ERRORS.EVENT_ROUTING_NOT_FOUND, [ this.name ]);
     this.#eventRouter.receiveEvent(eventDomains.RENDERER, event);
   }
 

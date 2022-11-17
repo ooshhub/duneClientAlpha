@@ -1,11 +1,13 @@
 import { Helpers } from '../../shared/Helpers';
 import { NodeHelpers } from '../NodeHelpers';
-import { mainHub, debug, electronRoot } from '../../main';
 import * as http from 'http';
+import * as electron from 'electron';
 import { DuneEvent } from '../../shared/events/DuneEvent';
+import { LocalHubServiceInterface } from '../../shared/events/LocalHubProviderInterface';
 
-export const initConfig = async (configReference): Promise<boolean> => {
-	const electronApp = electronRoot.app;
+export const initConfig = async (configReference, mainHub: LocalHubServiceInterface): Promise<boolean> => {
+
+	const electronApp = electron.app;
 	const rootPath = import.meta.url.replace(/\/main\/[^/]+$/, '').replace(/^[^:]+:\/\/\//, '');
 	const externalPath = electronApp.isPackaged ? electronApp.getPath('exe').replace(/\\[^\\]+$/, '') : rootPath;
 	if (!rootPath) throw new Error(`initConfig error: no root path to Electron found.`);
@@ -29,13 +31,12 @@ export const initConfig = async (configReference): Promise<boolean> => {
 	Object.assign(configReference, config);
 	if (configReference.PATH.ROOT) {
 		const loadResult = await Helpers.parallelLoader([
-			{ name: `playerSettings`, load: getUserSettings(configReference) },
+			{ name: `playerSettings`, load: getUserSettings(configReference, mainHub) },
 			{ name: `netSettings`, load: getPublicIp(configReference) },
 			{ name: `electronReady`, load: electronApp.whenReady() },
-			{ name: 'mainHubInit', load: import('../mainHub.js') }
 		]);
 		if (loadResult.failures === 0) {
-			debug.log(loadResult.msgs.join('\n'));
+			console.log(loadResult.msgs.join('\n'));
 			return true;
 		} else {
 			throw new Error(loadResult.errs.join('\n'));
@@ -45,7 +46,7 @@ export const initConfig = async (configReference): Promise<boolean> => {
 }
 
 // Load user settings, or get defaults
-const getUserSettings = async (configReference): Promise<Error | void> => {
+const getUserSettings = async (configReference: genericJson, mainHub: LocalHubServiceInterface): Promise<Error | void> => {
 	const settingsPath = `${configReference.PATH.USERDATA}/userSettings.json`;
   let err;
 	try {
@@ -58,7 +59,7 @@ const getUserSettings = async (configReference): Promise<Error | void> => {
 		else {
 			if (!/^[A-Za-z]_/.test(`${settings.player.pid}`)) {
 				settings.player.pid = Helpers.generatePlayerId(process?.env?.USERNAME ?? '');
-				debug.log(`New player ID generated: ${settings.player.id}`);
+				console.log(`New player ID generated: ${settings.player.id}`);
 				mainHub.trigger(new DuneEvent('saveConfig', settings));
 			}
 			if ('playerName' !in settings.player) {

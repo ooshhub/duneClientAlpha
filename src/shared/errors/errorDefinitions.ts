@@ -8,7 +8,7 @@ export const ERRORS = {
 
   // Events & Communication
   IPC_NOT_FOUND: `IPC passthrough not found on Window object.`,
-  EVENT_ROUTING_NOT_FOUND: `Event Router could not be located`,
+  EVENT_ROUTING_NOT_FOUND: `%0 - Event Router could not be located`,
   EVENT_ROUTING_NOT_LINKED: `%0 is not linked to an Event Routing service.`,
   UNKNOWN_EVENT_DOMAIN: `Unknown event type received: %0`,
   SOCKET_NOT_FOUND: `SocketIo client socket could not be found.`,

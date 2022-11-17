@@ -6,11 +6,13 @@ import { DebugLogger } from './shared/DebugLogger';
 import { initConfig } from './main/config/initLoader';
 import { DuneEvent } from './shared/events/DuneEvent';
 import { EVENTS, MainEventIndex } from './main/events/MainEventIndex';
+import { IpcMessagingService } from './shared/events/IpcMessagingService';
+import { MainEventRouting } from './main/events/MainEventRouting';
 
 export const CONFIG: genericJson = { DEBUG: 1 }; // This will be handed off to ConfigHandler when rewriting initHandler
-const mainHub = new EventHub('main');
+const mainHub = new EventHub('mainHub');
+MainEventIndex.eventHub = mainHub;
 const debug = new DebugLogger('main', mainHub, true, true);
-
 
 // TODO: Set up MainEventRouting and MainEventIndex, then remove mainFunctions and mainHub
 
@@ -18,7 +20,7 @@ debug.log(`===Dependencies Loaded===`);
 
 // Call initLoader
 (async (): Promise<void> => {
-	initConfig(CONFIG).then(() => {
+	initConfig(CONFIG, mainHub).then(() => {
     debug.log(`===Initialised settings===`);
       startElectron!();
     }).catch((e) => {
@@ -52,23 +54,7 @@ const startElectron = async (): Promise<void> => {
 		return win;
 	}
 
-	// const loadingFrame = await createWindow({
-	// 	browserWindow: {
-	// 		width: 768,
-	// 		height: 432,
-	// 		resizable: true,
-	// 		skipTaskbar: true,
-	// 		frame: false,
-	// 		titleBarVisible: false,
-	// 	},
-	// 	html: `${CONFIG.PATH.HTML}/splash.html`
-	// });
-
-	// loadingFrame.once('ready-to-show', async () => {
-	// 	await Helpers.timeout(100);
-	// 	loadingFrame.show();
-	// 	Helpers.windowFade(loadingFrame, 500);
-	// });
+	// Instantiate the main Window
 	const mainFrame = await createWindow({
 		browserWindow: {
 			width: screen.height * (16/9),
@@ -87,11 +73,25 @@ const startElectron = async (): Promise<void> => {
 		dev: true,
 		maximize: false
 	});
-  if (!CONFIG.CORE.isPackaged && process.env['ELECTRON_RENDERER_URL']) mainFrame.loadURL(process.env['ELECTRON_RENDERER_URL']);
+
+	// Load IPC service and Event Routing
+	const ipcMessageService = new IpcMessagingService(
+		'mainIpcService', 
+		{ interface: mainFrame.webContents, channelName: 'sendToRenderer' }, 
+		{ interface: electron.ipcMain, channelName: 'sendToMain' }
+	);
+	const eventRouting = new MainEventRouting(ipcMessageService, mainHub);
+	mainHub.on('coreLoadComplete', () => {
+		console.log('CORE LOAD COMPLETE');
+		debug.info('core load compelte');
+	});
+
+	// Punch Vue into the main Window
+	if (!CONFIG.CORE.isPackaged && process.env['ELECTRON_RENDERER_URL']) mainFrame.loadURL(process.env['ELECTRON_RENDERER_URL']);
   else mainFrame.loadFile(`${CONFIG.PATH.ROOT}/renderer/index.html`);
-  
+
 	mainHub.trigger(new DuneEvent('mainWindowReady', { win: mainFrame }));
-	
+	// Something happens here???
 
 	let coreLoad = false;
 	mainHub.once('coreLoadComplete', () => coreLoad = true);
@@ -118,7 +118,6 @@ const startElectron = async (): Promise<void> => {
 		});
 	});
 
-	mainFrame.webContents.send()
 
 	// TODO: These can go somewhere later
 	const inspectEl = async ({ x,y }) => {

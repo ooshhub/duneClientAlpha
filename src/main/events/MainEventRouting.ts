@@ -22,7 +22,7 @@ export class MainEventRouting extends EventRouting {
     this.#rendererLink = ipcMessagingService;
     // Register with the services for receiving
     this.#mainLink.registerEventRouter(this);
-    this.#rendererLink.registerEventRouter(this);
+    this.#rendererLink.registerEventRouter(this, eventDomains.MAIN);
 
     if (!this.#mainLink || !this.#rendererLink) throw new DuneError(ERRORS.SERVICE_PROVIDER_ERROR, [ 'server/main/renderer' ]);
   }
@@ -34,6 +34,7 @@ export class MainEventRouting extends EventRouting {
    * @param event 
    */
 	async receiveEvent(domain: eventDomains, event: DuneEvent) {
+		console.log(domain);
 		switch(domain) {
 			case eventDomains.MAIN: {
 				this.#mainLink.trigger(event);
@@ -41,7 +42,7 @@ export class MainEventRouting extends EventRouting {
 			}
 			// TODO: send through API routes
 			case eventDomains.RENDERER: {
-				this.#rendererLink.sendToMainProcess(event);
+				this.#rendererLink.sendMessage(event);
 				break;
 			}
 			default: {

@@ -24,6 +24,7 @@ export class EventHub implements LocalHubServiceInterface {
 
   registerEventRouter(router: EventRouting) {
     this.#router = router;
+		console.info(`Registered ${router.name} with ${this.name}`);
   }
 
   name: string;
@@ -38,7 +39,7 @@ export class EventHub implements LocalHubServiceInterface {
   /**
    * Register a function with the EventHub service
    * 
-   * @param event 
+   * @param eventName
    * @param callback 
    * @param priority 
    * @returns 
@@ -65,7 +66,7 @@ export class EventHub implements LocalHubServiceInterface {
     // Check 'for' handlers first, to send event to correct event hub
     if (/\//.test(eventName)) {
       const parts = eventName.match(/^(\w+)\/(\w+)/);
-      if (parts && parts[1] && parts[2]) this.passToEventRouting(parts[1], new DuneEvent(parts[2], eventData));
+      if (parts && parts[1] && parts[2]) this.passToEventRouting(parts[1], new DuneEvent(parts[2], eventData)).catch(e => console.warn(e.message));
       else console.warn(`${this.name}: Bad 'for' trigger: ${eventName}`);
     } else {
       // Check 'once' one time events next
@@ -86,7 +87,11 @@ export class EventHub implements LocalHubServiceInterface {
   }
 
   async passToEventRouting(destination: string, duneEvent: DuneEvent) {
-    if (!this.#router) throw new DuneError(ERRORS.EVENT_ROUTING_NOT_FOUND);
+    if (!this.#router) {
+			console.warn(`${this.name}: ${ERRORS.EVENT_ROUTING_NOT_FOUND}, attempting local route`);
+			this.trigger(duneEvent);
+			return;
+		}
     const domain = eventDomains[destination.toUpperCase()];
     if (!domain) throw new DuneError(ERRORS.UNKNOWN_EVENT_DOMAIN, [ destination ]);
     this.#router.receiveEvent(domain, duneEvent);

@@ -4,9 +4,9 @@ import { DuneEvent } from "../../shared/events/DuneEvent";
 import { LocalHubServiceInterface } from "../../shared/events/LocalHubProviderInterface";
 import { eventDomains } from "../../shared/serviceProviders/EventRoutingInterface";
 import { IpcMessagingInterface } from "../../shared/serviceProviders/IpcMessagingInterface";
-import { ServerLinkProviderInterface } from "../serviceProviders/ServerLinkProviderInterface";
-import { ServiceProviderRegistry } from "../serviceProviders/ServiceProviderRegistry";
+import { ServerLinkProviderInterface } from "../net/ServerLinkProviderInterface";
 import { EventRouting } from "../../shared/events/EventRouting";
+import { ServiceProviderRegistry } from "../ServiceProviderRegistry/ServiceProviderRegistry";
 
 export class RendererEventRouting extends EventRouting {
 
@@ -22,11 +22,11 @@ export class RendererEventRouting extends EventRouting {
     // Register the services for sending
     super('rendererEventRouter');
     this.#serverLink = eventRouterConfig.serverLinkProvider;
-    this.#mainLink = eventRouterConfig.ipcMessagingProvicer;
+    this.#mainLink = eventRouterConfig.ipcMessagingProvider;
     this.#rendererLink = eventRouterConfig.localHubProvider;
     // Register with the services for receiving
     this.#serverLink.registerEventRouter(this);
-    this.#mainLink.registerEventRouter(this);
+    this.#mainLink.registerEventRouter(this, eventDomains.RENDERER);
     this.#rendererLink.registerEventRouter(this);
 
     if (!this.#serverLink || !this.#mainLink || !this.#rendererLink) throw new DuneError(ERRORS.SERVICE_PROVIDER_ERROR, [ 'server/main/renderer' ]);
@@ -41,7 +41,7 @@ export class RendererEventRouting extends EventRouting {
   async receiveEvent(domain: eventDomains, event: DuneEvent) {
     switch(domain) {
       case eventDomains.MAIN: {
-        this.#mainLink.sendToMainProcess(event);
+        this.#mainLink.sendMessage(event);
         break;
       }
       case eventDomains.RENDERER: {

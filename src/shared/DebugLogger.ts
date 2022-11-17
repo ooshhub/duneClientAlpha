@@ -39,9 +39,10 @@ export class DebugLogger implements DebugProviderInterface {
   error(...args: any[]) { this.#sendLog('error', new Error().stack ?? '', ...args) }
 
   #sendLog(style: string, stack: string|null, ...msgs: any[]): void {
-    console.info('blah');
     if (!this.#hub) return;
-    if (this.#debugFlag) this.#hub.trigger(new DuneEvent(`${this.#receiver}/${this.#loggerName}Log`, { msgs, style, stack })); 
+    if (this.#debugFlag) {
+			this.#hub.trigger(new DuneEvent(`${this.#receiver}/${this.#loggerName}Log`, { msgs, style, stack }));
+		}
     if (this.#logToConsole && console[style]) console[style](...msgs);
   }
 
