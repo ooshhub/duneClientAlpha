@@ -44,7 +44,6 @@ export class RendererEventRouting extends EventRouting {
         this.#mainLink.sendToMainProcess(event);
         break;
       }
-      // TODO: send through API routes
       case eventDomains.RENDERER: {
         this.#rendererLink.trigger(event);
         break;
