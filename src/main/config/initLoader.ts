@@ -1,8 +1,8 @@
-import { Helpers } from '../shared/Helpers';
-import { NodeHelpers } from './NodeHelpers';
-import { mainHub, debug, electronRoot } from '../main';
+import { Helpers } from '../../shared/Helpers';
+import { NodeHelpers } from '../NodeHelpers';
+import { mainHub, debug, electronRoot } from '../../main';
 import * as http from 'http';
-import { DuneEvent } from '../shared/events/DuneEvent';
+import { DuneEvent } from '../../shared/events/DuneEvent';
 
 export const initConfig = async (configReference): Promise<boolean> => {
 	const electronApp = electronRoot.app;
@@ -32,7 +32,7 @@ export const initConfig = async (configReference): Promise<boolean> => {
 			{ name: `playerSettings`, load: getUserSettings(configReference) },
 			{ name: `netSettings`, load: getPublicIp(configReference) },
 			{ name: `electronReady`, load: electronApp.whenReady() },
-			{ name: 'mainHubInit', load: import('./mainHub.js') }
+			{ name: 'mainHubInit', load: import('../mainHub.js') }
 		]);
 		if (loadResult.failures === 0) {
 			debug.log(loadResult.msgs.join('\n'));

@@ -3,14 +3,16 @@ import * as electron from 'electron';
 import { Helpers } from './shared/Helpers';
 import { EventHub } from './shared/events/EventHub';
 import { DebugLogger } from './shared/DebugLogger';
-import { initConfig } from './main/initLoader';
+import { initConfig } from './main/config/initLoader';
 import { DuneEvent } from './shared/events/DuneEvent';
+import { EVENTS, MainEventIndex } from './main/events/MainEventIndex';
 
-export const CONFIG: genericJson = { DEBUG: 1 };
-export const mainHub = new EventHub('main');
-export const debug = new DebugLogger('main', mainHub, true, true);
-export const electronRoot = electron;
-export const Win: genericJson = {};
+export const CONFIG: genericJson = { DEBUG: 1 }; // This will be handed off to ConfigHandler when rewriting initHandler
+const mainHub = new EventHub('main');
+const debug = new DebugLogger('main', mainHub, true, true);
+
+
+// TODO: Set up MainEventRouting and MainEventIndex, then remove mainFunctions and mainHub
 
 debug.log(`===Dependencies Loaded===`);
 
@@ -88,8 +90,8 @@ const startElectron = async (): Promise<void> => {
   if (!CONFIG.CORE.isPackaged && process.env['ELECTRON_RENDERER_URL']) mainFrame.loadURL(process.env['ELECTRON_RENDERER_URL']);
   else mainFrame.loadFile(`${CONFIG.PATH.ROOT}/renderer/index.html`);
   
-	Win.Main = mainFrame;
 	mainHub.trigger(new DuneEvent('mainWindowReady', { win: mainFrame }));
+	
 
 	let coreLoad = false;
 	mainHub.once('coreLoadComplete', () => coreLoad = true);
@@ -115,4 +117,23 @@ const startElectron = async (): Promise<void> => {
 			// }
 		});
 	});
+
+	// TODO: These can go somewhere later
+	const inspectEl = async ({ x,y }) => {
+    if (!mainFrame || !parseInt(x) || !parseInt(y)) {
+      mainFrame.webContents.inspectElement(x,y);
+    } else debug.log(`Couldn't find main window or bad pos data: (${x}, ${y})`);
+  }
+
+	const ioClipboard = async (inputString) => {
+    if (inputString) 	electron.clipboard.writeText(`${inputString}`);
+    else {
+      let content = await electron.clipboard.readText();
+      content = content ?? 'no text';
+      mainHub.trigger(new DuneEvent('renderer/responseClipboard', { value: content }));
+    }
+  }
+	MainEventIndex.registerEvents(EVENTS.HTML.INSPECT, inspectEl);
+	MainEventIndex.registerEvents([ EVENTS.CLIPBOARD.READ, EVENTS.CLIPBOARD.WRITE ], ioClipboard);
+
 }
