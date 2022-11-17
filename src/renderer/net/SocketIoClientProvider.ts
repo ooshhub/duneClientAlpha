@@ -5,7 +5,7 @@ import { Helpers } from "../../shared/Helpers";
 import { DebugProviderInterface } from "../serviceProviders/DebugProviderInterface";
 import { EventRoutingInterface } from "../../shared/events/EventRoutingInterface";
 import { ServerLinkProviderInterface } from "../serviceProviders/ServerLinkProviderInterface";
-import { eventDomains } from "./EventRouting";
+import { eventDomains } from "./RendererEventRouting";
 import { SocketIoConnectionHandler } from "./SocketIoConnectionHandler";
 import { Socket, io } from './lib/socket.io.esm.min.js';
 

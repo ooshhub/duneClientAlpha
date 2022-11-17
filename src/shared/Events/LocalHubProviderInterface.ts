@@ -1,7 +1,7 @@
 // TODO: create a DunEvent class & type to pass in to trigger
 
-import { EventRouting } from "../../renderer/net/EventRouting";
 import { DuneEvent } from "./DuneEvent";
+import { EventRouting } from "./EventRouting";
 
 export interface LocalHubServiceInterface {
 
