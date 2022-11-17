@@ -4,14 +4,14 @@ import * as electron from 'electron';
 const { contextBridge, ipcRenderer } = electron;
 
 const channels = {
-  send: ['sendToMain', 'receiveFromRenderer'],
+  send: ['sendToMain'],
   receive: ['sendToRenderer']
 };
 // Context bridge for messaging: Main process <==> Renderer 
 if (process.contextIsolated) {
   contextBridge.exposeInMainWorld('rendererToHub', {
     send: async (channel, event, ...args) => {
-      if (channels.send.includes(channel)) ipcRenderer.send('receiveFromRenderer', event, ...args);
+      if (channels.send.includes(channel)) ipcRenderer.send('sendToMain', event, ...args);
       else console.warn(`Message from renderer was rejected: "${channel}" is not a valid token`);
     },
     receive: async (channel, evHandler) => {

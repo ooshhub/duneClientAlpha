@@ -2,19 +2,27 @@ import { DuneError } from "../../shared/errors/DuneError";
 import { ERRORS } from "../../shared/errors/errorDefinitions";
 import { DuneEvent } from "../../shared/events/DuneEvent";
 import { EventRouting } from "../../shared/events/EventRouting";
-import { eventDomains } from "../../shared/events/EventRoutingInterface";
+import { eventDomains } from "../../shared/serviceProviders/EventRoutingInterface";
 import { IpcEvent } from "../../shared/events/IpcEvent";
-import { IpcMessagingInterface } from "../serviceProviders/IpcMessagingInterface";
+import { IpcMessagingInterface } from "../../shared/serviceProviders/IpcMessagingInterface";
+
+export enum IpcOrigins {
+	RENDERER = 'renderer',
+	MAIN		 = 'main',
+}
 
 export class IpcMessaging implements IpcMessagingInterface {
 
   static instance: IpcMessaging;
 
   #router: EventRouting|null = null;
+	name: string;
 
-  constructor() {
+  constructor({ name, origin }: { name: string, origin: IpcOrigins }) {
     if (IpcMessaging.instance) throw new DuneError(ERRORS.ONLY_ONE_INSTANCE_ALLOWED, [this.constructor.name]);
     if (!window.rendererToHub) throw new DuneError(ERRORS.IPC_NOT_FOUND);
+		this.name = name;
+		this.#disableOwnChannel(origin);
     this.#registerSelf();
   }
 
@@ -27,6 +35,11 @@ export class IpcMessaging implements IpcMessagingInterface {
   #registerSelf() {
     IpcMessaging.instance = this;
   }
+	#disableOwnChannel(origin: IpcOrigins) {
+		const disableFunction = async (...args:any[]) => { console.warn(`${this.name}: Tried to send IPC message to self`, ...args); };
+		if (origin === IpcOrigins.RENDERER) this.sendToRenderer = disableFunction;
+		else this.sendToMainProcess = disableFunction;
+	}
 
   registerEventRouter(eventRouter: EventRouting) {
     this.#router = eventRouter;
@@ -37,5 +50,9 @@ export class IpcMessaging implements IpcMessagingInterface {
   async sendToMainProcess({ eventName, eventData }: DuneEvent) {
     window.rendererToHub.send('sendToMain', new IpcEvent(eventName, eventData));
   }
+
+	async sendToRenderer({ eventName, eventData}) {
+
+	}
 
 }

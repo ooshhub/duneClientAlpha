@@ -8,18 +8,18 @@ import { LocalHubServiceInterface } from "../../shared/events/LocalHubProviderIn
 
 import { EventHub } from "../../shared/events/EventHub";
 import { DebugLogger } from "../../shared/DebugLogger";
-import { DebugProviderInterface, DebugReceiverProviderInterface } from "./DebugProviderInterface";
+import { DebugProviderInterface, DebugReceiverProviderInterface } from "../../shared/serviceProviders/DebugProviderInterface";
 import { ServerLinkProviderInterface } from "./ServerLinkProviderInterface";
 import { SocketIoClientProvider } from "../net/SocketIoClientProvider";
-import { IpcMessagingInterface } from "./IpcMessagingInterface";
-import { IpcMessaging } from "../net/IpcMessaging";
+import { IpcMessagingInterface } from "../../shared/serviceProviders/IpcMessagingInterface";
+import { IpcMessaging, IpcOrigins } from "../net/IpcMessaging";
 import { DebugReceiver } from "../../shared/DebugReceiver";
 import { RendererEventIndex } from "../events/RendererEventIndex";
 
 const defaultProviders = {
   localHubProvider: new EventHub('RendererHub'),
   serverLinkProvider: new SocketIoClientProvider({ player: {}, server: {} }),
-  ipcMessagingProvider: new IpcMessaging(),
+  ipcMessagingProvider: new IpcMessaging({ name: 'rendererIpcService', origin: IpcOrigins.RENDERER }),
 
   debugLogger: new DebugLogger('renderer', null),
   debugReceiver: new DebugReceiver,

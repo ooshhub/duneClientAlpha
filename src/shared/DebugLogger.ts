@@ -1,7 +1,7 @@
 import { LocalHubServiceInterface } from "./events/LocalHubProviderInterface";
 import { EventHub } from "./events/EventHub";
 import { DuneEvent } from "./events/DuneEvent";
-import { DebugProviderInterface } from "../renderer/serviceProviders/DebugProviderInterface";
+import { DebugProviderInterface } from "./serviceProviders/DebugProviderInterface";
 
 // TODO: jsDocs, and provide a switch for turning logging on and off in both receiver and logger
 

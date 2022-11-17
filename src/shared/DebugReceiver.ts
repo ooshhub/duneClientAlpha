@@ -1,5 +1,5 @@
 import { RendererEventIndex } from "../renderer/events/RendererEventIndex";
-import { DebugReceiverProviderInterface } from "../renderer/serviceProviders/DebugProviderInterface";
+import { DebugReceiverProviderInterface } from "./serviceProviders/DebugProviderInterface";
 import { DuneEvent } from "./events/DuneEvent";
 
 // Receiver for remote loggers. Lives on the rendererHub for dunePrototype.

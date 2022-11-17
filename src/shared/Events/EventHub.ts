@@ -4,7 +4,7 @@ import { DuneError } from "../errors/DuneError";
 import { ERRORS } from "../errors/errorDefinitions";
 import { DuneEvent } from "./DuneEvent";
 import { EventRouting } from "./EventRouting";
-import { eventDomains } from "./EventRoutingInterface";
+import { eventDomains } from "../serviceProviders/EventRoutingInterface";
 import { LocalHubServiceInterface } from "./LocalHubProviderInterface";
 
 /**
