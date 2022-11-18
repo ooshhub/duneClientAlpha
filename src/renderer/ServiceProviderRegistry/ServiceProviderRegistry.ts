@@ -15,9 +15,10 @@ import { IpcMessagingInterface } from "../../shared/serviceProviders/IpcMessagin
 import { DebugReceiver } from "../../shared/DebugReceiver";
 import { RendererEventIndex } from "../events/RendererEventIndex";
 import { IpcMessagingService } from "../../shared/events/IpcMessagingService";
+import { eventDomains } from "../../shared/serviceProviders/EventRoutingInterface";
 
 const defaultProviders = {
-  localHubProvider: new EventHub('RendererHub'),
+  localHubProvider: new EventHub('RendererHub', eventDomains.RENDERER),
   serverLinkProvider: new SocketIoClientProvider({ player: {}, server: {} }),
   ipcMessagingProvider: new IpcMessagingService(
 		'rendererIpcService', { interface: window.rendererToHub,	channelName: 'sendToMain' },

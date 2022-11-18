@@ -28,8 +28,10 @@ export class ConfigHandler {
 		this.debug.log(this.#config.userSettings);
 		if (!options.noSave) this.#saveConfig();
 	}
-	async #getConfig () {
-		this.#hub.trigger(new DuneEvent('renderer/responseConfig', this.#config ));
+	async #getConfig (duneEvent: DuneEvent) {
+		const { id, domain } = duneEvent.reply ?? {};
+		if (id && domain) this.#hub.trigger({ ...duneEvent, eventName: `${domain}/${id}`, eventData: this.#config });
+		else this.#hub.trigger(new DuneEvent({ eventName: 'renderer/responseConfig', eventData: this.#config }));
 	}
 
 	async #saveConfig () {
@@ -48,7 +50,7 @@ export class ConfigHandler {
 	}
 
 	registerHandlers() {
-		MainEventIndex.registerEvents(EVENTS.CONFIG.REQUEST, this.#getConfig);
+		MainEventIndex.registerEvents(EVENTS.CONFIG.REQUEST, this.#getConfig.bind(this));
 		MainEventIndex.registerEvents(EVENTS.CONFIG.WRITE, this.#modifyConfig);
 		MainEventIndex.registerEvents(EVENTS.SYSTEM.EXIT, this.#saveAndExit);
 	}

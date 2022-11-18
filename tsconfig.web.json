@@ -7,6 +7,7 @@
     "src/renderer/**/*.js",
     "src/renderer/app/**/*.js",
     "src/shared/**/*.*ts",
+		"src/shared/**/*.*js",
     "src/@types/**/*"
   ],
   "exclude": ["**/*.vue"],

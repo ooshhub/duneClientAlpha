@@ -143,11 +143,11 @@ export class SocketIoClientProvider implements ServerLinkProviderInterface {
       const err = new DuneError(ERRORS.AUTH_FAILED);
       this.debug.warn(err, 'error');
       this.destroyConnection();
-      this.#eventRouter?.receiveEvent(eventDomains.RENDERER, new DuneEvent('authReject', err));
+      this.#eventRouter?.receiveEvent(eventDomains.RENDERER, new DuneEvent({ eventName: 'authReject', eventData: err }));
     } else {
       this.#debug.log([`Authenticated ${authEvent.isHost ? 'HOST' : 'PLAYER'} with server`]);
       // Start Lobby init event
-      this.#eventRouter?.receiveEvent(eventDomains.RENDERER, new DuneEvent('authSuccess', authEvent));
+      this.#eventRouter?.receiveEvent(eventDomains.RENDERER, new DuneEvent({ eventName: 'authSuccess', eventData: authEvent }));
     }
   }
 

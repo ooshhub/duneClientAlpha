@@ -60,7 +60,7 @@ const getUserSettings = async (configReference: genericJson, mainHub: LocalHubSe
 			if (!/^[A-Za-z]_/.test(`${settings.player.pid}`)) {
 				settings.player.pid = Helpers.generatePlayerId(process?.env?.USERNAME ?? '');
 				console.log(`New player ID generated: ${settings.player.id}`);
-				mainHub.trigger(new DuneEvent('saveConfig', settings));
+				mainHub.trigger(new DuneEvent({ eventName: 'saveConfig', eventData: settings }));
 			}
 			if ('playerName' !in settings.player) {
 				settings.player.playerName = process.env?.USERNAME || `newPlayer_${Math.floor(Math.random()*999)}`;

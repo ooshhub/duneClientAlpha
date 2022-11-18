@@ -34,7 +34,7 @@ export class IpcMessagingService implements IpcMessagingInterface {
     this.#registerSelf();
   }
 	#registerListener() {
-		this.#ipcReceiver.interface.on(this.#ipcReceiver.channelName, (_ipcEvent: any, eventName: string, eventData: genericJson) => this.#receiveIpcMessage(eventName, eventData));
+		this.#ipcReceiver.interface.on(this.#ipcReceiver.channelName, (_ipcEvent: any, duneEvent: DuneEvent) => this.#receiveIpcMessage(duneEvent));
 	}
   #registerSelf() {
     IpcMessagingService.instance = this;
@@ -47,12 +47,13 @@ export class IpcMessagingService implements IpcMessagingInterface {
   }
 
 	async #dispatchIpcMessage(event: DuneEvent) {
-		const { eventName, eventData } = event;
-		this.#ipcSender.interface.send(this.#ipcSender.channelName, eventName, eventData);
+		// console.log('dispaych ipc', event);
+		this.#ipcSender.interface.send(this.#ipcSender.channelName, event);
 	}
-	async #receiveIpcMessage(eventName: string, eventData: genericJson) {
+	async #receiveIpcMessage(duneEvent: DuneEvent) {
+		// console.log(duneEvent, 'ipc recd');
 		if (this.#eventRouter && this.#hostDomain) {
-			this.#eventRouter.receiveEvent(this.#hostDomain, new DuneEvent(eventName, eventData))
+			this.#eventRouter.receiveEvent(this.#hostDomain, duneEvent);
 		}
 		else {
 			throw new DuneError(ERRORS.EVENT_ROUTING_NOT_FOUND, [ this.name ]);

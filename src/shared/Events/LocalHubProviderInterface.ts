@@ -18,5 +18,7 @@ export interface LocalHubServiceInterface {
   registerEventRouter: (router: EventRouting) => void;
 
   passToEventRouting: (destination: string, event: DuneEvent) => Promise<void>;
+
+	request: (duneEvent: DuneEvent, timeout?: number) => Promise<DuneEvent|void>;
   
 }

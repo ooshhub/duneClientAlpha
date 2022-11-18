@@ -43,7 +43,7 @@ export class Helpers {
   /**
    * Simple async timeout
    * @param {number} ms - number of milliseconds to wait
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   static async timeout(ms: number): Promise<void> { return new Promise(res => setTimeout(() => res(), ms)) }
 
@@ -162,29 +162,41 @@ export class Helpers {
   //   }
   //   return output;
   // }
-  // static randomInt(range=100, depth=32) {
-  //   const max = range * 2**depth;
-  //   let random;
-  //   do { random = Math.floor(Math.random() * 2**depth) }
-  //   while (random >= max);
-  //   return random % range;
-  // }
-  // static generateUID(numIds = 1) {
-  //   let output = [], key = '';
-  //   const chars = '-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
-  //   let ts = Date.now();
-  //   for (let i = 8; i > 0; i--) { output[i] = chars.charAt(ts % 64), ts = Math.floor(ts / 64) }
-  //   for (let j = 0; j < 12; j++) { output.push(chars.charAt(this.randomInt(64))) }
-  //   key = output.join('');
-  //   if (numIds > 1) {
-  //     numIds = Math.min(32, numIds);
-  //     output = Array(numIds).fill().map((v,i) => {
-  //       const lastChar = chars[(chars.indexOf(key[19])+i)%64];
-  //       return `${key.slice(0,18)}${lastChar}`;
-  //     });
-  //     return output;
-  //   } else return key;
-  // }
+  static randomInt(range=100, depth=32): number {
+    const max = range * 2**depth;
+    let random;
+    do { random = Math.floor(Math.random() * 2**depth) }
+    while (random >= max);
+    return random % range;
+  }
+
+	/**
+	 * Generate a 20-char firebase style UID
+	 * Overload 1 (no args) - a single ID
+	 * Overload 2 (int) - array of simultaneous IDs, guaranteed to not collide
+	 * 
+	 * @param {number|null} numIds 
+	 */
+	static generateUID(numIds?: null): string;
+	static generateUID(numIds: number): string[];
+	
+  static generateUID(numIds?: number|null): string|string[] {
+    let output: string[] = [], key = '';
+    const chars = '-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
+    let ts = Date.now();
+    for (let i = 8; i > 0; i--) { output[i] = chars.charAt(ts % 64), ts = Math.floor(ts / 64) }
+    for (let j = 0; j < 12; j++) { output.push(chars.charAt(this.randomInt(64))) }
+    key = output.join('');
+    if (numIds && numIds >= 1) {
+      numIds = Math.min(32, numIds);
+      output = Array(numIds).fill(null).map((_v,i) => {
+        const lastChar = chars[(chars.indexOf(key[19])+i)%64];
+        return `${key.slice(0,18)}${lastChar}`;
+      });
+      return output;
+    }
+		else return key;
+  }
   // Convert a string path to a nested object reference
   // e.g. getObjectPath(myObj, 'config/player/playerName) returns myObj.config.player.playerName
   // Set createPath to false to disabled creating missing keys. Will return null if path not found

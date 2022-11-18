@@ -8,11 +8,15 @@ import { DuneEvent } from './shared/events/DuneEvent';
 import { EVENTS, MainEventIndex } from './main/events/MainEventIndex';
 import { IpcMessagingService } from './shared/events/IpcMessagingService';
 import { MainEventRouting } from './main/events/MainEventRouting';
+import { eventDomains } from './shared/serviceProviders/EventRoutingInterface';
+import { ConfigHandler } from './main/config/ConfigHandler';
 
 export const CONFIG: genericJson = { DEBUG: 1 }; // This will be handed off to ConfigHandler when rewriting initHandler
-const mainHub = new EventHub('mainHub');
+const mainHub = new EventHub('mainHub', eventDomains.MAIN);
 MainEventIndex.eventHub = mainHub;
 const debug = new DebugLogger('main', mainHub, true, true);
+const configManager = new ConfigHandler(CONFIG, debug, mainHub);
+configManager.registerHandlers();
 
 // TODO: Set up MainEventRouting and MainEventIndex, then remove mainFunctions and mainHub
 
@@ -90,7 +94,7 @@ const startElectron = async (): Promise<void> => {
 	if (!CONFIG.CORE.isPackaged && process.env['ELECTRON_RENDERER_URL']) mainFrame.loadURL(process.env['ELECTRON_RENDERER_URL']);
   else mainFrame.loadFile(`${CONFIG.PATH.ROOT}/renderer/index.html`);
 
-	mainHub.trigger(new DuneEvent('mainWindowReady', { win: mainFrame }));
+	mainHub.trigger(new DuneEvent({ eventName: 'mainWindowReady', eventData: { win: mainFrame } }));
 	// Something happens here???
 
 	let coreLoad = false;
@@ -112,7 +116,7 @@ const startElectron = async (): Promise<void> => {
 			// if (!mainFrame.isVisible()) {
 				mainFrame.show();
 				mainFrame.setOpacity(1.0);
-				mainHub.trigger(new DuneEvent('renderer/fadeElement', ['main#mainmenu', 'in', 500]));
+				mainHub.trigger(new DuneEvent({ eventName: 'renderer/fadeElement', eventData: ['main#mainmenu', 'in', 500] }));
 				// loadingFrame.destroy();
 			// }
 		});
@@ -131,7 +135,7 @@ const startElectron = async (): Promise<void> => {
     else {
       let content = await electron.clipboard.readText();
       content = content ?? 'no text';
-      mainHub.trigger(new DuneEvent('renderer/responseClipboard', { value: content }));
+      mainHub.trigger(new DuneEvent({ eventName: 'renderer/responseClipboard', eventData: { value: content } }));
     }
   }
 	MainEventIndex.registerEvents(EVENTS.HTML.INSPECT, inspectEl);

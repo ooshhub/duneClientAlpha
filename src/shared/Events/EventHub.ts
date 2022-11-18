@@ -6,6 +6,7 @@ import { DuneEvent } from "./DuneEvent";
 import { EventRouting } from "./EventRouting";
 import { eventDomains } from "../serviceProviders/EventRoutingInterface";
 import { LocalHubServiceInterface } from "./LocalHubProviderInterface";
+import { Helpers } from "../Helpers";
 
 /**
  * @implements {LocalHubServiceInterface}
@@ -14,12 +15,14 @@ export class EventHub implements LocalHubServiceInterface {
 
   #registeredEvents = {};
   #registeredOneTimeEvents = {};
+	#eventDomain: eventDomains;
   // #registeredDestinations = {};
 
   #router: EventRouting|null = null;
 
-  constructor(name = 'NewHub') {
+  constructor(name = 'NewHub', domain: eventDomains) {
     this.name = name;
+		this.#eventDomain = domain;
   }
 
   registerEventRouter(router: EventRouting) {
@@ -61,12 +64,13 @@ export class EventHub implements LocalHubServiceInterface {
   // Supply a '/' in event name to signify a destination and send to a 'for' registered handler
   // 'main/requestHtml' will send the event to the 'for' handler 'main', with {event: requestHtml, data: {...args}} as parameters
   async trigger(duneEvent: DuneEvent) {
-    const { eventName, eventData } = duneEvent;
+		// console.log(`${this.#eventDomain}: got event ${duneEvent.eventName}`);
+    const { eventName } = duneEvent;
     // console.log(eventName);
     // Check 'for' handlers first, to send event to correct event hub
     if (/\//.test(eventName)) {
-      const parts = eventName.match(/^(\w+)\/(\w+)/);
-      if (parts && parts[1] && parts[2]) this.passToEventRouting(parts[1], new DuneEvent(parts[2], eventData)).catch(e => console.warn(e.message));
+      const parts = eventName.match(/^(\w+)\/([0-z_-]+)/);
+      if (parts && parts[1] && parts[2]) this.passToEventRouting(parts[1], new DuneEvent({ ...duneEvent, eventName: parts[2] })).catch(e => console.warn(e.message));
       else console.warn(`${this.name}: Bad 'for' trigger: ${eventName}`);
     } else {
       // Check 'once' one time events next
@@ -96,4 +100,29 @@ export class EventHub implements LocalHubServiceInterface {
     if (!domain) throw new DuneError(ERRORS.UNKNOWN_EVENT_DOMAIN, [ destination ]);
     this.#router.receiveEvent(domain, duneEvent);
   }
+
+	/**
+	 * Send a request with a reply ID
+	 * Receiver must know to respond with a reply
+	 * 
+	 * @param duneEvent - payload
+	 * @param timeout? - milliseconds before timeout
+	 * @returns 
+	 */
+	async request(duneEvent: DuneEvent, timeout?: number): Promise<DuneEvent|void> {
+		const uid = Helpers.generateUID();
+		duneEvent.reply = {
+			domain: this.#eventDomain,
+			id: uid,
+		};
+		const response: Promise<DuneEvent> = new Promise((res) => {
+			this.once(uid, (duneEvent:DuneEvent) => res(duneEvent));
+		});
+		this.trigger(duneEvent);
+		return await Promise.race([
+			response,
+			Helpers.timeout(timeout ?? 5000),
+		]);
+	}
+
 }

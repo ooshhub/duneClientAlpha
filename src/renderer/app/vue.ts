@@ -23,4 +23,10 @@ Object.assign(app.config.globalProperties, {
 app.mount('#app');
 
 debug.log('hihi', eventRouting);
-localHub.trigger(new DuneEvent('main/coreLoadComplete'));
+localHub.trigger(new DuneEvent({ eventName: 'main/coreLoadComplete' }));
+
+localHub.request(new DuneEvent({ eventName: 'main/requestConfig' })).then(resp => {
+	console.info(resp);
+}).catch(err => {
+	console.error(err);
+}).finally(() => debug.log(`Huzzah!`));
