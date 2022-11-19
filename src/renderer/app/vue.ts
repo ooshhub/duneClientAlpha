@@ -3,9 +3,8 @@ import { createApp } from 'vue';
 import { DuneEvent } from '../../shared/events/DuneEvent';
 import { RendererEventRouting } from '../events/RendererEventRouting';
 import { ServiceProviderRegistry } from '../ServiceProviderRegistry/ServiceProviderRegistry';
-
-// Initialise Vue
-const app = createApp(App);
+import { DuneError } from '../../shared/errors/DuneError';
+import { ERRORS } from '../../shared/errors/errorDefinitions';
 
 // Register all Service Providers
 const providerRegistry = new ServiceProviderRegistry,
@@ -14,19 +13,21 @@ const providerRegistry = new ServiceProviderRegistry,
 const debug = providerRegistry.debugLogger,
   localHub = providerRegistry.localHubProvider;
 
-// Assign globals
-Object.assign(app.config.globalProperties, {
-  $localHub: providerRegistry.localHubProvider,
-  $debug: debug
-});
-
-app.mount('#app');
-
-debug.log('hihi', eventRouting);
 localHub.trigger(new DuneEvent({ eventName: 'main/coreLoadComplete' }));
 
-localHub.request(new DuneEvent({ eventName: 'main/requestConfig' })).then(resp => {
-	console.info(resp);
-}).catch(err => {
-	console.error(err);
-}).finally(() => debug.log(`Huzzah!`));
+const vueProps: genericJson = {};
+
+await localHub.request(new DuneEvent({ eventName: 'main/requestConfig' })).then(resp => {
+	if (resp) vueProps.config = resp.eventData;
+	else throw new DuneError(ERRORS.CONFIG_NOT_LOADED, [ 'main.ts'] );
+	}).catch((err: Error) => {
+		debug.error(err);
+	});
+
+// Initialise Vue
+const app = createApp(App, vueProps);
+
+app.provide('localHub', providerRegistry.localHubProvider);
+app.provide('debug', debug);
+
+app.mount('#app');

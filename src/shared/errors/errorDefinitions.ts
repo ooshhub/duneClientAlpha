@@ -14,4 +14,7 @@ export const ERRORS = {
   SOCKET_NOT_FOUND: `SocketIo client socket could not be found.`,
   AUTH_FAILED: `Authentication with server failed.`,
 
+	// Config
+	CONFIG_NOT_LOADED: `%0: could not load Config values.`
+
 }
